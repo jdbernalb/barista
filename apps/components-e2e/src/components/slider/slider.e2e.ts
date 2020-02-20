@@ -17,18 +17,6 @@
 // tslint:disable no-lifecycle-call no-use-before-declare no-magic-numbers
 // tslint:disable no-any max-file-line-count no-unbound-method use-component-selector
 
-import {
-  clickOption,
-  errorBox,
-  input,
-  clearAll,
-  filterTags,
-  focusFilterFieldInput,
-  getFilterfieldTags,
-  tagOverlay,
-  setupSecondTestScenario,
-} from './filter-field.po';
-import { Selector } from 'testcafe';
 import { waitForAngular } from '../../utils';
 
 fixture('Slider')

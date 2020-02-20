@@ -18,8 +18,11 @@ import { NgModule } from '@angular/core';
 
 import { DtSlider } from './slider';
 
+import { CommonModule } from '@angular/common';
+
 @NgModule({
   exports: [DtSlider],
   declarations: [DtSlider],
+  imports: [CommonModule],
 })
 export class DtSliderModule {}
