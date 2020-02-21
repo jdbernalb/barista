@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import { NgModule } from '@angular/core';
-
-import { FormsModule } from '@angular/forms';
-
-import { DtSlider } from './slider';
-
-import { CommonModule } from '@angular/common';
-
-@NgModule({
-  exports: [DtSlider],
-  declarations: [DtSlider],
-  imports: [CommonModule, FormsModule],
-})
-export class DtSliderModule {}
+export interface SliderValuePair {
+  actualValue: number;
+  pointOnSlider: number;
+}

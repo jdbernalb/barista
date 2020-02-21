@@ -1,7 +1,19 @@
-<div class="dt-slider-track-wrapper" #trackWrapper>
-  <div class="dt-slider-fill" [ngStyle]="_sliderFillStyles()"></div>
-  <div class="dt-slider-background" [ngStyle]="_sliderBackgroundStyles()"></div>
+<div #trackWrapper>
+  <div class="dt-slider-track-wrapper">
+    <div class="dt-slider-fill" [ngStyle]="_sliderFillStyles()"></div>
+    <div
+      class="dt-slider-background"
+      [ngStyle]="_sliderBackgroundStyles()"
+    ></div>
+  </div>
+  <div class="dt-slider-thumb-wrapper" [ngStyle]="_thumbWrapStyles()">
+    <div class="dt-slider-thumb"></div>
+  </div>
 </div>
-<div class="dt-slider-thumb-wrapper" [ngStyle]="_thumbWrapStyles()">
-  <div class="dt-slider-thumb"></div>
-</div>
+<input
+  type="text"
+  value="{{value}}"
+  (change)="_inputChangeHandler"
+  [(ngModel)]="value"
+  #sliderInput
+/>
