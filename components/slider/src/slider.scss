@@ -1,0 +1,63 @@
+@mixin animateSlider {
+  transition: transform 0.1s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dt-slider-wrapper {
+  position: relative;
+  display: block;
+  padding: 4px 0;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.dt-slider-track-wrapper {
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+}
+
+.dt-slider-background,
+.dt-slider-fill {
+  @include animateSlider();
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 3px;
+}
+
+.dt-slider-background {
+  transform-origin: 100% 100%;
+  background-color: lightgray;
+}
+
+.dt-slider-fill {
+  background-color: red;
+  transform-origin: 0 0;
+}
+
+.dt-slider-thumb-wrapper {
+  @include animateSlider();
+  position: absolute;
+  width: 100%;
+  top: 0;
+  height: 0;
+}
+
+.dt-slider-thumb {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: green;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+  transform: translate(50%, 0);
+}

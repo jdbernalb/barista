@@ -26,9 +26,22 @@ import {
   ViewEncapsulation,
   Output,
   EventEmitter,
+  Directive,
 } from '@angular/core';
+import {
+  DOWN_ARROW,
+  END,
+  HOME,
+  LEFT_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
+  RIGHT_ARROW,
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
 import { clamp, sortedIndexBy } from 'lodash';
 import { SliderValuePair } from './slider-value-pair';
+
+let uniqueId = 0;
 
 @Component({
   selector: 'dt-slider',
@@ -48,11 +61,14 @@ export class DtSlider implements OnInit, AfterViewInit {
   private _clientRect: ClientRect;
   private _valueMapping: Array<SliderValuePair>;
 
-  //@Input() value: number = 50;
+  /** @internal Unique id for this input. */
+  _labelUid = `dt-slider-label-${uniqueId++}`;
+
   @Input() min: number = 0;
   @Input() max: number = 100;
   @Input() step: number = 5;
   @Input() value: number = 50;
+  @Input() disabled: boolean = false;
 
   @Output() change = new EventEmitter<number>();
 
@@ -114,7 +130,6 @@ export class DtSlider implements OnInit, AfterViewInit {
   private _mouseUpHandle = () => {
     document.removeEventListener('mousemove', this._mouseMoveHandle);
     document.removeEventListener('mousemove', this._mouseUpHandle);
-    console.log(this.value);
   };
 
   _inputChangeHandler = (): void => {
@@ -147,6 +162,7 @@ export class DtSlider implements OnInit, AfterViewInit {
       'mousedown',
       this._cursorDown,
     );
+    this._trackWrapper.nativeElement.addEventListener('keydown', this._keyDown);
     this._generateStepping();
     this._setValueForSlider(this.value);
 
@@ -154,6 +170,40 @@ export class DtSlider implements OnInit, AfterViewInit {
       'change',
       this._inputChangeHandler,
     );
+  }
+
+  private _keyDown = (event: KeyboardEvent): void => {
+    switch (event.keyCode) {
+      case LEFT_ARROW:
+        this._setNewValue(this.value - this.step);
+        break;
+      case RIGHT_ARROW:
+        this._setNewValue(this.value + this.step);
+        break;
+      case UP_ARROW:
+        this._setNewValue(this.value + this.step);
+        break;
+      case DOWN_ARROW:
+        this._setNewValue(this.value - this.step);
+        break;
+      case HOME:
+        this._setNewValue(this.min);
+        break;
+      case END:
+        this._setNewValue(this.max);
+        break;
+      case PAGE_UP:
+        this._setNewValue(this.value + this.step * 10);
+        break;
+      case PAGE_DOWN:
+        this._setNewValue(this.value - this.step * 10);
+        break;
+    }
+  };
+
+  _setNewValue(value: number): void {
+    this.value = DtSlider._tempRound(value);
+    this._setValueForSlider(this.value);
   }
 
   _setValueForSlider(value: number): void {
@@ -195,9 +245,29 @@ export class DtSlider implements OnInit, AfterViewInit {
 
     for (let i = 0; i <= stepNumber; i++) {
       this._valueMapping.push(<SliderValuePair>{
-        actualValue: i * this.step,
+        actualValue: DtSlider._tempRound(i * this.step),
         pointOnSlider: i * stepSize,
       });
     }
   }
+
+  // rounding to 2 decimal spaces. Temp because better solution needed.
+  static _tempRound(toRound: number): number {
+    return Math.round((toRound + Number.EPSILON) * 100) / 100;
+  }
 }
+
+@Directive({
+  selector: `dt-slider-label, [dt-slider-label], [dtSliderLabel]`,
+  exportAs: 'dtSliderLabel',
+})
+export class DtSliderLabel {}
+
+@Directive({
+  selector: `dt-slider-unit, [dt-slider-unit], [dtSliderUnit]`,
+  exportAs: 'dtSliderUnit',
+  host: {
+    class: 'dt-slider-unit',
+  },
+})
+export class DtSliderUnit {}

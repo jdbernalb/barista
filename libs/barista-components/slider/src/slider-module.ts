@@ -18,13 +18,13 @@ import { NgModule } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 
-import { DtSlider } from './slider';
+import { DtSlider, DtSliderLabel, DtSliderUnit } from './slider';
 
 import { CommonModule } from '@angular/common';
 
 @NgModule({
-  exports: [DtSlider],
-  declarations: [DtSlider],
+  exports: [DtSlider, DtSliderLabel, DtSliderUnit],
+  declarations: [DtSlider, DtSliderLabel, DtSliderUnit],
   imports: [CommonModule, FormsModule],
 })
 export class DtSliderModule {}
