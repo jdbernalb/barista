@@ -21,10 +21,11 @@ import { FormsModule } from '@angular/forms';
 import { DtSlider, DtSliderLabel, DtSliderUnit } from './slider';
 
 import { CommonModule } from '@angular/common';
+import { DtInputModule } from 'components/input/src/input-module';
 
 @NgModule({
   exports: [DtSlider, DtSliderLabel, DtSliderUnit],
   declarations: [DtSlider, DtSliderLabel, DtSliderUnit],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DtInputModule],
 })
 export class DtSliderModule {}
