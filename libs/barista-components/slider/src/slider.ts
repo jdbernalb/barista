@@ -35,8 +35,8 @@ import {
   fromEvent,
   animationFrameScheduler,
   Subject,
-  combineLatest,
   merge,
+  BehaviorSubject,
 } from 'rxjs';
 import {
   distinctUntilChanged,
@@ -44,9 +44,35 @@ import {
   switchMap,
   takeUntil,
   observeOn,
+  share,
+  withLatestFrom,
+  tap,
+  debounceTime,
+  filter,
 } from 'rxjs/operators';
+import {
+  LEFT_ARROW,
+  DOWN_ARROW,
+  RIGHT_ARROW,
+  UP_ARROW,
+  HOME,
+  END,
+  PAGE_UP,
+  PAGE_DOWN,
+} from '@angular/cdk/keycodes';
 
 let uniqueId = 0;
+
+const KEY_CODES_ARRAY: Array<number> = [
+  LEFT_ARROW,
+  DOWN_ARROW,
+  RIGHT_ARROW,
+  UP_ARROW,
+  HOME,
+  END,
+  PAGE_UP,
+  PAGE_DOWN,
+];
 
 @Component({
   selector: 'dt-slider',
@@ -69,8 +95,29 @@ export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
   @Input() min: number = 0;
   @Input() max: number = 100;
   @Input() step: number = 5;
-  @Input() value: number = 50;
   @Input() disabled: boolean = false;
+
+  @Input()
+  get value(): number {
+    return this._value$.value;
+  }
+  set value(value: number) {
+    this._value$.next(value);
+  }
+  private _value$ = new BehaviorSubject<number>(50);
+
+  private _clientRect$ = new Subject<ClientRect>();
+
+  private _resizeObserver$ = new Subject();
+  private _observer: ResizeObserver;
+
+  private inputFieldValue$ = new Subject<string>();
+
+  sliderInputValue: string;
+
+  inputValueChanged(inputValue: string): void {
+    this.inputFieldValue$.next(inputValue);
+  }
 
   @Output() change = new EventEmitter<number>();
 
@@ -78,7 +125,7 @@ export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('trackWrapper', { static: true })
   _trackWrapper: ElementRef<HTMLDivElement>;
 
-  /** @internal Holds the thumb wrapper */
+  /** @internal Holds the thumb */
   @ViewChild('thumb', { static: true })
   _thumb: ElementRef<HTMLDivElement>;
 
@@ -90,7 +137,7 @@ export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sliderBackground', { static: true })
   _sliderBackground: ElementRef<HTMLDivElement>;
 
-  /** @internal Holds the slider background */
+  /** @internal Holds the slider input field */
   @ViewChild(DtInput, { static: true })
   _sliderInput: DtInput;
 
@@ -108,6 +155,25 @@ export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
       countingStep *= 10;
       this._roundShift++;
     }
+
+    this._observer = new ResizeObserver(() => {
+      this._resizeObserver$.next();
+    });
+
+    this._observer.observe(this._trackWrapper.nativeElement);
+
+    this._resizeObserver$
+      .pipe(
+        debounceTime(50),
+        takeUntil(this._destroy$),
+      )
+      .subscribe(() => {
+        this._clientRect$.next(
+          this._trackWrapper.nativeElement.getBoundingClientRect(),
+        );
+      });
+
+    this._resizeObserver$.next(); // run at least once TODO: find a better way of doing this.
   }
 
   ngAfterViewInit(): void {
@@ -119,112 +185,119 @@ export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
+    this._observer.unobserve(this._trackWrapper.nativeElement);
   }
 
   private _captureMouseEvents(): void {
-    const touchstart$ = fromEvent(
-      this._trackWrapper.nativeElement,
-      'touchstart',
+    const start$ = merge(
+      fromEvent(this._trackWrapper.nativeElement, 'mousedown'),
+      fromEvent(this._trackWrapper.nativeElement, 'touchstart'),
     );
-    const mousedown$ = fromEvent(this._trackWrapper.nativeElement, 'mousedown');
-    const start$ = merge(mousedown$, touchstart$);
 
-    const getEnd = () =>
-      merge(fromEvent(window, 'mouseup'), fromEvent(window, 'touchend'));
+    const move$ = merge(
+      fromEvent<MouseEvent>(window, 'mousemove').pipe(
+        map(mouseEvent => mouseEvent.clientX),
+      ),
+      fromEvent<TouchEvent>(window, 'touchmove').pipe(
+        map(touchEvent => touchEvent.changedTouches[0].clientX),
+      ),
+    );
 
-    const getMove = () =>
-      merge(
-        fromEvent<MouseEvent>(window, 'mousemove').pipe(
-          map(mouseEvent => mouseEvent.clientX),
-        ),
-        fromEvent<TouchEvent>(window, 'touchmove').pipe(
-          map(touchEvent => touchEvent.changedTouches[0].clientX),
-        ),
-      );
+    const moveEnd$ = merge(
+      fromEvent(window, 'mouseup'),
+      fromEvent(window, 'touchend'),
+    );
 
-    //const click$ = fromEvent(this._trackWrapper.nativeElement, 'click');
-
-    const config$ = start$.pipe(
+    const drag$ = start$.pipe(
       switchMap(() =>
-        getMove().pipe(
+        move$.pipe(
           distinctUntilChanged(),
           observeOn(animationFrameScheduler),
-          takeUntil(getEnd()),
+          takeUntil(moveEnd$),
         ),
       ),
-      map(coordinate => {
-        console.log(coordinate);
-        const clientRect = this._trackWrapper.nativeElement.getBoundingClientRect();
-        const { left: offset, width } = clientRect;
-        return {
+      share(),
+    );
+
+    const click$ = fromEvent<MouseEvent>(
+      this._trackWrapper.nativeElement,
+      'click',
+    ).pipe(map(mouseEvent => mouseEvent.clientX));
+
+    const keyDown$ = fromEvent<KeyboardEvent>(
+      this._trackWrapper.nativeElement,
+      'keydown',
+    ).pipe(
+      filter(keyboardEvent => KEY_CODES_ARRAY.includes(keyboardEvent.keyCode)),
+      map(keyboardEvent => {
+        keyboardEvent.stopPropagation(); // global angular keydown would trigger CD.
+        return keyboardEvent.keyCode;
+      }),
+    );
+
+    // triggered by drag and click
+    const mouseValue$ = merge(drag$, click$).pipe(
+      withLatestFrom(this._clientRect$),
+      map(([coordinate, { left, width }]) =>
+        getSliderValueForCoordinate({
           coordinate,
-          offset,
+          offset: left,
           width,
           min: this.min,
           max: this.max,
           step: this.step,
           roundShift: this._roundShift,
-        };
-      }),
-    );
-
-    const value$ = config$.pipe(
-      map(config => getSliderValueForCoordinate(config)),
+        }),
+      ),
       distinctUntilChanged(),
     );
 
-    value$.pipe(takeUntil(this._destroy$)).subscribe(value => {
-      this.value = value;
-      this._sliderInput.value = `${value}`;
+    //const inputchange$ = fromEvent<>(this._sliderInput._onInput);
+    this.inputFieldValue$.subscribe(value => {
+      console.log(value);
     });
 
-    combineLatest(value$, config$)
+    const keyBoardValue$ = keyDown$.pipe(
+      map(keyCode => getKeyCodeValue(this.max, this.step, keyCode)),
+      withLatestFrom(this._value$),
+      map(([valueAddition, value]) =>
+        clamp(value + valueAddition, this.min, this.max),
+      ),
+      distinctUntilChanged(),
+    );
+
+    merge(mouseValue$, keyBoardValue$)
       .pipe(
-        map(([value, config]) =>
-          getSliderPositionBasedOnValue({ value, ...config }),
+        tap(value => {
+          this._value$.next(value);
+          //this._sliderInput.value = value.toString();
+          this._trackWrapper.nativeElement.setAttribute(
+            'aria-valuenow',
+            value.toString(),
+          );
+        }),
+        withLatestFrom(this._clientRect$),
+        map(([value, { left, width }]) =>
+          getSliderPositionBasedOnValue({
+            value,
+            offset: left,
+            width,
+            min: this.min,
+            max: this.max,
+            step: this.step,
+            roundShift: this._roundShift,
+          }),
         ),
-        distinctUntilChanged(),
         takeUntil(this._destroy$),
       )
-      .subscribe(offset => {
+      .subscribe(offsetX => {
         this._thumb.nativeElement.style.transform = `translateX(-${100 -
-          offset * 100}%)`;
-        this._sliderFill.nativeElement.style.transform = `scale3d(${offset}, 1, 1)`;
+          offsetX * 100}%)`;
+        this._sliderFill.nativeElement.style.transform = `scale3d(${offsetX}, 1, 1)`;
         this._sliderBackground.nativeElement.style.transform = `scale3d(${1 -
-          offset}, 1, 1)`;
+          offsetX}, 1, 1)`;
       });
   }
-
-  _inputChangeHandler(): void {
-    this.value = +this.value;
-    // this._moveSliderBasedOnValue();
-  }
-
-  // private _keyDown = (event: KeyboardEvent): void => {
-  //   switch (event.keyCode) {
-  //     case LEFT_ARROW:
-  //     case DOWN_ARROW:
-  //       this.value -= this.step;
-  //       break;
-  //     case RIGHT_ARROW:
-  //     case UP_ARROW:
-  //       this.value += this.step;
-  //       break;
-  //     case HOME:
-  //       this.value = this.min;
-  //       break;
-  //     case END:
-  //       this.value = this.max;
-  //       break;
-  //     case PAGE_UP:
-  //       this.value += this.step * 10;
-  //       break;
-  //     case PAGE_DOWN:
-  //       this.value -= this.step * 10;
-  //       break;
-  //   }
-  //   this._moveSliderBasedOnValue();
-  // };
 }
 
 @Directive({
@@ -313,4 +386,25 @@ function getSliderPositionBasedOnValue(config: {
     config.roundShift,
   );
   return (roundedValue - config.min) / (config.max - config.min);
+}
+
+function getKeyCodeValue(max: number, step: number, keyCode: number): number {
+  switch (keyCode) {
+    case LEFT_ARROW:
+    case DOWN_ARROW:
+      return -step;
+    case RIGHT_ARROW:
+    case UP_ARROW:
+      return step;
+    case HOME:
+      return -max;
+    case END:
+      return max;
+    case PAGE_UP:
+      return step * 10;
+    case PAGE_DOWN:
+      return -step * 10;
+    default:
+      return 0;
+  }
 }

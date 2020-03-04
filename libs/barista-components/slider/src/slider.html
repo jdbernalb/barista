@@ -23,7 +23,10 @@
 </div>
 <input
   type="text"
+  inputmode="numeric"
   dtInput
   pattern="\d+\.?\d*"
   [attr.aria-labelledby]="_labelUid"
+  [(ngModel)]="sliderInputValue"
+  (change)="inputValueChanged(sliderInputValue)"
 /><ng-content select="dt-slider-unit"></ng-content>
