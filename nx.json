@@ -110,6 +110,7 @@
         "schematics",
         "secondary-nav",
         "select",
+        "slider",
         "show-more",
         "stepper",
         "switch",
@@ -255,6 +256,9 @@
       "tags": ["scope:components", "type:library"]
     },
     "select": {
+      "tags": ["scope:components", "type:library"]
+    },
+    "slider": {
       "tags": ["scope:components", "type:library"]
     },
     "show-more": {

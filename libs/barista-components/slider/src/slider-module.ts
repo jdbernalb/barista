@@ -21,7 +21,7 @@ import { FormsModule } from '@angular/forms';
 import { DtSlider, DtSliderLabel, DtSliderUnit } from './slider';
 
 import { CommonModule } from '@angular/common';
-import { DtInputModule } from 'components/input/src/input-module';
+import { DtInputModule } from '@dynatrace/barista-components/input';
 
 @NgModule({
   exports: [DtSlider, DtSliderLabel, DtSliderUnit],

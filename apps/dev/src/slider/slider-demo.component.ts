@@ -15,7 +15,7 @@
  */
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DtSlider } from 'components/slider/src/slider';
+import { DtSlider } from '@dynatrace/barista-components/slider';
 
 @Component({
   selector: 'slider-dev-app-demo',
