@@ -23,13 +23,16 @@ import {
   EventEmitter,
   Input,
   NgZone,
-  OnInit,
   Output,
   ViewChild,
   ViewEncapsulation,
   OnDestroy,
 } from '@angular/core';
-import { clamp, roundToDecimal } from '@dynatrace/barista-components/core';
+import {
+  clamp,
+  roundToDecimal,
+  isDefined,
+} from '@dynatrace/barista-components/core';
 import { DtInput } from '@dynatrace/barista-components/input';
 import {
   fromEvent,
@@ -37,6 +40,8 @@ import {
   Subject,
   merge,
   BehaviorSubject,
+  of,
+  Observable,
 } from 'rxjs';
 import {
   distinctUntilChanged,
@@ -78,7 +83,6 @@ const KEY_CODES_ARRAY: Array<number> = [
   selector: 'dt-slider',
   templateUrl: 'slider.html',
   styleUrls: ['slider.scss'],
-  providers: [],
   host: {
     class: 'dt-slider',
   },
@@ -86,15 +90,41 @@ const KEY_CODES_ARRAY: Array<number> = [
   exportAs: 'dtSlider',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
+export class DtSlider implements AfterViewInit, OnDestroy {
   private _roundShift: number = 0;
 
   /** @internal Unique id for this input. */
   _labelUid = `dt-slider-label-${uniqueId++}`;
 
+  private _value$ = new BehaviorSubject<number>(30);
+  private _clientRect$: Observable<ClientRect>;
+  private _resizeObserver$ = new Subject();
+  private _observer: ResizeObserver;
+  private inputFieldValue$ = new Subject<number>();
+
   @Input() min: number = 0;
   @Input() max: number = 100;
-  @Input() step: number = 5;
+
+  @Input()
+  get step(): number {
+    return this._step;
+  }
+  set step(value: number) {
+    if (isDefined(value)) {
+      this._step = value;
+    }
+
+    this._roundShift = 0;
+    // deal with rounding problems.
+    let countingStep = this._step;
+
+    while (countingStep % 1 !== 0) {
+      countingStep *= 10;
+      this._roundShift++;
+    }
+  }
+  private _step: number = 5;
+
   @Input() disabled: boolean = false;
 
   @Input()
@@ -104,19 +134,19 @@ export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
   set value(value: number) {
     this._value$.next(value);
   }
-  private _value$ = new BehaviorSubject<number>(50);
 
-  private _clientRect$ = new Subject<ClientRect>();
-
-  private _resizeObserver$ = new Subject();
-  private _observer: ResizeObserver;
-
-  private inputFieldValue$ = new Subject<string>();
-
-  sliderInputValue: string;
-
-  inputValueChanged(inputValue: string): void {
-    this.inputFieldValue$.next(inputValue);
+  inputValueChanged(event: Event): void {
+    /**
+     * Convert input string value to number and call
+     * roundToSnap takes care of snapping the values to the steps
+     */
+    const rounded = roundToSnap(
+      +(event.currentTarget as HTMLInputElement).value,
+      this.step,
+      this.min,
+      this.max,
+    );
+    this.inputFieldValue$.next(rounded);
   }
 
   @Output() change = new EventEmitter<number>();
@@ -143,42 +173,25 @@ export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
 
   private _destroy$ = new Subject<void>();
 
-  constructor(
-    private _zone: NgZone, // private changeDetectorRef: ChangeDetectorRef,
-  ) {}
+  constructor(private _zone: NgZone) {}
 
-  ngOnInit(): void {
-    // deal with rounding problems.
-    let countingStep = this.step;
-
-    while (countingStep % 1 !== 0) {
-      countingStep *= 10;
-      this._roundShift++;
-    }
-
+  ngAfterViewInit(): void {
     this._observer = new ResizeObserver(() => {
       this._resizeObserver$.next();
     });
 
     this._observer.observe(this._trackWrapper.nativeElement);
 
-    this._resizeObserver$
-      .pipe(
-        debounceTime(50),
-        takeUntil(this._destroy$),
-      )
-      .subscribe(() => {
-        this._clientRect$.next(
-          this._trackWrapper.nativeElement.getBoundingClientRect(),
-        );
-      });
+    this._clientRect$ = merge(
+      this._resizeObserver$.pipe(debounceTime(50)),
+      of(null),
+    ).pipe(
+      map(() => this._trackWrapper.nativeElement.getBoundingClientRect()),
+      takeUntil(this._destroy$),
+    );
 
-    this._resizeObserver$.next(); // run at least once TODO: find a better way of doing this.
-  }
-
-  ngAfterViewInit(): void {
     this._zone.runOutsideAngular(() => {
-      this._captureMouseEvents();
+      this._captureEvents();
     });
   }
 
@@ -188,7 +201,11 @@ export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
     this._observer.unobserve(this._trackWrapper.nativeElement);
   }
 
-  private _captureMouseEvents(): void {
+  private _updateInput(value: number): void {
+    this._sliderInput.value = value.toString();
+  }
+
+  private _captureEvents(): void {
     const start$ = merge(
       fromEvent(this._trackWrapper.nativeElement, 'mousedown'),
       fromEvent(this._trackWrapper.nativeElement, 'touchstart'),
@@ -224,57 +241,69 @@ export class DtSlider implements OnInit, AfterViewInit, OnDestroy {
       'click',
     ).pipe(map(mouseEvent => mouseEvent.clientX));
 
-    const keyDown$ = fromEvent<KeyboardEvent>(
-      this._trackWrapper.nativeElement,
-      'keydown',
-    ).pipe(
-      filter(keyboardEvent => KEY_CODES_ARRAY.includes(keyboardEvent.keyCode)),
-      map(keyboardEvent => {
-        keyboardEvent.stopPropagation(); // global angular keydown would trigger CD.
-        return keyboardEvent.keyCode;
-      }),
-    );
+    // stream from keyboard events
+    fromEvent<KeyboardEvent>(this._trackWrapper.nativeElement, 'keydown')
+      .pipe(
+        filter(keyboardEvent =>
+          KEY_CODES_ARRAY.includes(keyboardEvent.keyCode),
+        ),
+        withLatestFrom(this._value$),
+        map(([keyboardEvent, value]) => {
+          keyboardEvent.stopPropagation(); // global angular keydown would trigger CD.
+          const valueAddition = getKeyCodeValue(
+            this.max,
+            this.step,
+            keyboardEvent.keyCode,
+          );
+          const newValue = clamp(value + valueAddition, this.min, this.max);
+          this._value$.next(newValue);
+          return newValue;
+        }),
+        distinctUntilChanged(),
+        takeUntil(this._destroy$),
+      )
+      .subscribe();
 
     // triggered by drag and click
-    const mouseValue$ = merge(drag$, click$).pipe(
-      withLatestFrom(this._clientRect$),
-      map(([coordinate, { left, width }]) =>
-        getSliderValueForCoordinate({
-          coordinate,
-          offset: left,
-          width,
-          min: this.min,
-          max: this.max,
-          step: this.step,
-          roundShift: this._roundShift,
+    merge(drag$, click$)
+      .pipe(
+        withLatestFrom(this._clientRect$),
+        map(([coordinate, { left, width }]) => {
+          const newValue = getSliderValueForCoordinate({
+            coordinate,
+            offset: left,
+            width,
+            min: this.min,
+            max: this.max,
+            step: this.step,
+            roundShift: this._roundShift,
+          });
+          this._value$.next(newValue);
+          return newValue;
         }),
-      ),
-      distinctUntilChanged(),
-    );
+        distinctUntilChanged(),
+        takeUntil(this._destroy$),
+      )
+      .subscribe();
 
-    //const inputchange$ = fromEvent<>(this._sliderInput._onInput);
-    this.inputFieldValue$.subscribe(value => {
-      console.log(value);
-    });
+    this.inputFieldValue$
+      .pipe(
+        map(value => {
+          this._value$.next(roundToSnap(value, this.step, this.min, this.max));
+        }),
+        distinctUntilChanged(),
+        takeUntil(this._destroy$),
+      )
+      .subscribe();
 
-    const keyBoardValue$ = keyDown$.pipe(
-      map(keyCode => getKeyCodeValue(this.max, this.step, keyCode)),
-      withLatestFrom(this._value$),
-      map(([valueAddition, value]) =>
-        clamp(value + valueAddition, this.min, this.max),
-      ),
-      distinctUntilChanged(),
-    );
-
-    merge(mouseValue$, keyBoardValue$)
+    this._value$
       .pipe(
         tap(value => {
-          this._value$.next(value);
-          //this._sliderInput.value = value.toString();
           this._trackWrapper.nativeElement.setAttribute(
             'aria-valuenow',
             value.toString(),
           );
+          this._updateInput(value);
         }),
         withLatestFrom(this._clientRect$),
         map(([value, { left, width }]) =>
@@ -327,19 +356,14 @@ function getSliderValueForCoordinate(config: {
   const valueRange = config.max - config.min;
   const sliderWidth = config.width;
   const distanceFromStart = config.coordinate - config.offset;
-  return roundToDecimal(
-    roundToSnap(
-      clamp(
-        config.min + (distanceFromStart / sliderWidth) * valueRange,
-        config.min,
-        config.max,
-      ),
-      config.step,
-      config.min,
-      config.max,
-    ),
-    config.roundShift,
+
+  const clamped = clamp(
+    config.min + (distanceFromStart / sliderWidth) * valueRange,
+    config.min,
+    config.max,
   );
+  const snapped = roundToSnap(clamped, config.step, config.min, config.max);
+  return roundToDecimal(snapped, config.roundShift);
 }
 
 function roundToSnap(
@@ -351,27 +375,6 @@ function roundToSnap(
   return clamp(Math.round(inputValue / step) * step, min, max);
 }
 
-// function getSliderPositionBasedOnCoordinate(config: {
-//   coordinate: number;
-//   min: number;
-//   max: number;
-//   offset: number;
-//   width: number;
-//   step: number;
-//   roundShift: number;
-// }): number  {
-//   const value = getSliderValueForCoordinate(config);
-
-//   // this is just for checking
-//   console.log(getSliderPositionBasedOnValue({value, ...config}));
-
-//   const roundedValue = roundToDecimal(
-//     roundToSnap(value, config.step, config.min, config.max),
-//     config.roundShift,
-//   );
-//   return (roundedValue - config.min) / (config.max - config.min);
-// }
-
 function getSliderPositionBasedOnValue(config: {
   value: number;
   min: number;
@@ -381,10 +384,13 @@ function getSliderPositionBasedOnValue(config: {
   step: number;
   roundShift: number;
 }): number {
-  const roundedValue = roundToDecimal(
-    roundToSnap(config.value, config.step, config.min, config.max),
-    config.roundShift,
+  const snappedValue = roundToSnap(
+    config.value,
+    config.step,
+    config.min,
+    config.max,
   );
+  const roundedValue = roundToDecimal(snappedValue, config.roundShift);
   return (roundedValue - config.min) / (config.max - config.min);
 }
 

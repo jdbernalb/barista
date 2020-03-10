@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DtSlider } from 'components/slider/src/slider';
 
 @Component({
   selector: 'slider-dev-app-demo',
   templateUrl: 'slider-demo.component.html',
   styleUrls: ['slider-demo.component.scss'],
 })
-export class SliderDemo {}
+export class SliderDemo implements OnInit {
+  outerValue = 20;
+
+  @ViewChild(DtSlider, { static: true })
+  private slider: DtSlider;
+
+  ngOnInit(): void {
+    // setInterval(() => {
+    //   this.outerValue = Math.random() * 40;
+    //   this.slider.value = this.outerValue;
+    // }, 10000);
+  }
+}
