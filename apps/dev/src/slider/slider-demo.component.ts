@@ -29,9 +29,10 @@ export class SliderDemo implements OnInit {
   private slider: DtSlider;
 
   ngOnInit(): void {
-    // setInterval(() => {
-    //   this.outerValue = Math.random() * 40;
-    //   this.slider.value = this.outerValue;
-    // }, 10000);
+    setInterval(() => {
+      this.outerValue = Math.random() * 50;
+      this.slider.value = this.outerValue;
+      console.log(this.outerValue);
+    }, 10000);
   }
 }
