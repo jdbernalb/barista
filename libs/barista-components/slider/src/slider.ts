@@ -27,6 +27,7 @@ import {
   ViewChild,
   ViewEncapsulation,
   OnDestroy,
+  OnInit,
 } from '@angular/core';
 import {
   clamp,
@@ -93,7 +94,7 @@ declare const window: any;
   exportAs: 'dtSlider',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DtSlider implements AfterViewInit, OnDestroy {
+export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   private _roundShift: number = 0;
 
   /** @internal Unique id for this input. */
@@ -182,6 +183,13 @@ export class DtSlider implements AfterViewInit, OnDestroy {
   private _destroy$ = new Subject<void>();
 
   constructor(private _zone: NgZone, private _platform: Platform) {}
+
+  ngOnInit(): void {
+    const initValue = roundToSnap(this.value, this.step, this.min, this.max);
+    if (this._value$.value !== initValue) {
+      this._updateValue(initValue);
+    }
+  }
 
   ngAfterViewInit(): void {
     if (this._platform.isBrowser && 'ResizeObserver' in window) {
@@ -291,8 +299,9 @@ export class DtSlider implements AfterViewInit, OnDestroy {
     );
 
     const inputValue$ = this.inputFieldValue$.pipe(
+      // distinctUntilChanged() purposefully left out, to round the value
+      // and update the input field with the rounded value
       map(value => roundToSnap(value, this.step, this.min, this.max)),
-      distinctUntilChanged(),
       takeUntil(this._destroy$),
     );
 
