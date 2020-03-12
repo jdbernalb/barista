@@ -36,11 +36,11 @@ import {
 import { DtInput } from '@dynatrace/barista-components/input';
 import {
   fromEvent,
+  merge,
+  of,
   animationFrameScheduler,
   Subject,
-  merge,
   BehaviorSubject,
-  of,
   Observable,
 } from 'rxjs';
 import {
@@ -112,9 +112,9 @@ export class DtSlider implements AfterViewInit, OnDestroy {
   get step(): number {
     return this._step;
   }
-  set step(value: number) {
-    if (isDefined(value)) {
-      this._step = value;
+  set step(step: number) {
+    if (isDefined(step)) {
+      this._step = step;
     }
 
     this._roundShift = 0;
@@ -141,10 +141,9 @@ export class DtSlider implements AfterViewInit, OnDestroy {
   }
 
   private _updateValue(value: number, userTriggered: boolean = true): void {
-    const rounded = roundToSnap(value, this.step, this.min, this.max);
-    this._value = rounded;
+    this._value = value;
     if (userTriggered) {
-      this._value$.next(rounded);
+      this._value$.next(roundToSnap(value, this.step, this.min, this.max));
     }
   }
 
@@ -307,8 +306,7 @@ export class DtSlider implements AfterViewInit, OnDestroy {
           this._updateInput(value);
           this._updateValue(value, false);
         }),
-        withLatestFrom(this._clientRect$),
-        map(([value, { left, width }]) =>
+        map(value =>
           getSliderPositionBasedOnValue({
             value,
             min: this.min,
@@ -352,15 +350,15 @@ function getSliderValueForCoordinate(config: {
   roundShift: number;
 }): number {
   const valueRange = config.max - config.min;
-  const sliderWidth = config.width;
   const distanceFromStart = config.coordinate - config.offset;
-
-  const clamped = clamp(
-    config.min + (distanceFromStart / sliderWidth) * valueRange,
+  const calculatedValue =
+    config.min + (distanceFromStart / config.width) * valueRange;
+  const snapped = roundToSnap(
+    calculatedValue,
+    config.step,
     config.min,
     config.max,
   );
-  const snapped = roundToSnap(clamped, config.step, config.min, config.max);
   return roundToDecimal(snapped, config.roundShift);
 }
 
@@ -370,7 +368,6 @@ function roundToSnap(
   min: number,
   max: number,
 ): number {
-  console.log('rounding...');
   return clamp(Math.round(inputValue / step) * step, min, max);
 }
 

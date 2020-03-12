@@ -30,7 +30,7 @@ export class SliderDemo implements OnInit {
 
   ngOnInit(): void {
     setInterval(() => {
-      this.outerValue = Math.random() * 50;
+      this.outerValue = Math.random() * 12;
       this.slider.value = this.outerValue;
       console.log(this.outerValue);
     }, 10000);
