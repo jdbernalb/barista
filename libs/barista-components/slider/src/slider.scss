@@ -18,7 +18,8 @@
   flex-wrap: nowrap;
 
   .dt-input {
-    width: 150px; /* life, universe, everything */
+    width: 57px;
+    display: block;
   }
 }
 
@@ -30,19 +31,20 @@
 
   .dt-slider-unit {
     padding: 5px 0 5px 8px;
-    flex-grow: 1;
-    max-width: 42px; /* life, universe, everything */
+    width: 44px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 .dt-slider-wrapper {
-  margin-right: 16px;
-  position: relative;
   display: block;
+  position: relative;
   padding: 15px 4px 0 0;
+  margin-right: 16px;
   user-select: none;
-  flex-basis: 80%;
-  flex-grow: 4;
+  flex-grow: 1;
 }
 
 .dt-slider-track-wrapper {
