@@ -1,2 +1,75 @@
-<button dt-button>Simple button</button>
-<a href="#" dt-button>Simple anchor button</a>
+<div>
+  <button
+    dt-button
+    [disabled]="disabled"
+    [variant]="variant"
+    [color]="color"
+    (click)="clickHandler($event)"
+  >
+    Simple button
+  </button>
+</div>
+
+<div>
+  <fluid-button
+    [disabled]="disabled"
+    [variant]="variant"
+    [color]="color"
+    (click)="clickHandler($event)"
+  >
+    Simple elements button
+  </fluid-button>
+</div>
+
+<div>
+  <h2>
+    Disabled:
+    <pre>{{ disabled }}</pre>
+  </h2>
+  <dt-checkbox [checked]="disabled" (change)="disabled = $event.checked">
+    Disabled</dt-checkbox
+  >
+</div>
+
+<div>
+  <h2>
+    Color:
+    <pre>{{ color }}</pre>
+  </h2>
+  <dt-radio-group (change)="color = $event.value">
+    <dt-radio-button style="display: block;" checked value="main"
+      >Main
+    </dt-radio-button>
+    <dt-radio-button style="display: block;" value="warning"
+      >Warning
+    </dt-radio-button>
+    <dt-radio-button style="display: block;" value="cta">CTA</dt-radio-button>
+  </dt-radio-group>
+</div>
+
+<div>
+  <h2>
+    Variant:
+    <pre>{{ variant }}</pre>
+  </h2>
+  <dt-radio-group (change)="variant = $event.value">
+    <dt-radio-button style="display: block;" checked value="primary"
+      >Primary
+    </dt-radio-button>
+    <dt-radio-button style="display: block;" value="secondary"
+      >Secondary
+    </dt-radio-button>
+    <dt-radio-button style="display: block;" value="nested"
+      >Nested
+    </dt-radio-button>
+  </dt-radio-group>
+</div>
+
+<div>
+  <h2>
+    Events:
+  </h2>
+  <pre *ngFor="let event of events">
+    {{ event | json }}
+  </pre>
+</div>

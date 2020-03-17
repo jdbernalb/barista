@@ -15,6 +15,11 @@
       "implementation": "./packager/index",
       "schema": "./packager/schema.json",
       "description": "Run packaging steps"
+    },
+    "elements": {
+      "implementation": "./elements/index",
+      "schema": "./elements/schema.json",
+      "description": "Run individual element builds and package them into one publishable library"
     }
   }
 }

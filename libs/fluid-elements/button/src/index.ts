@@ -14,29 +14,4 @@
  * limitations under the License.
  */
 
-import { Component } from '@angular/core';
-import '@dynatrace/fluid-elements/button';
-import {
-  ButtonVariant,
-  DtButtonThemePalette,
-} from '@dynatrace/barista-components/button';
-
-@Component({
-  selector: 'button-dev-app-demo',
-  templateUrl: './button-demo.component.html',
-  styleUrls: ['./button-demo.component.scss'],
-})
-export class ButtonDemo {
-  disabled: boolean = false;
-
-  variant: ButtonVariant = 'primary';
-
-  color: DtButtonThemePalette = 'main';
-
-  events: any[] = [];
-
-  clickHandler(event: MouseEvent): void {
-    this.events.push(event);
-    console.log(event.target);
-  }
-}
+export * from './lib/button';

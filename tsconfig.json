@@ -7,7 +7,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "lib": ["es2017", "dom"],
+    "lib": ["es2018", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
     "noUnusedLocals": true,
@@ -17,7 +17,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strictNullChecks": true,
-    "target": "es5",
+    "target": "es2015",
     "typeRoots": ["node_modules/@types"],
     "paths": {
       "@dynatrace/barista-components/alert": [
@@ -201,7 +201,10 @@
       "@dynatrace/shared/barista-definitions": [
         "libs/shared/barista-definitions/src/index.ts"
       ],
-      "@environments/*": ["environments/*.ts"]
+      "@environments/*": ["environments/*.ts"],
+      "@dynatrace/fluid-elements/button": [
+        "libs/fluid-elements/button/src/index.ts"
+      ]
     },
     "plugins": [
       {

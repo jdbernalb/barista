@@ -125,6 +125,9 @@
         "tree-table"
       ]
     },
+    "package-elements": {
+      "tags": ["scope:elements", "type:library"]
+    },
     "alert": {
       "tags": ["scope:components", "type:library"]
     },
@@ -304,6 +307,9 @@
     },
     "testing-fixtures": {
       "tags": ["scope:testing", "type:library"]
+    },
+    "fluid-button": {
+      "tags": ["scope:elements", "type:library"]
     }
   }
 }

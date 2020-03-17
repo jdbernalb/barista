@@ -42,6 +42,27 @@ export interface PackageJson {
   dependencies: {
     [key: string]: string;
   };
+  devDependencies: {
+    [key: string]: string;
+  };
+  license?: string;
+  author?: string;
+}
+
+export interface NxJson {
+  npmScope: string;
+  implicitDependencies: {
+    [key: string]: string;
+  };
+  tasksRunnerOptions: {
+    [key: string]: any;
+  };
+  projects: {
+    [key: string]: {
+      tags: string[];
+      implicitDependencies: string[];
+    };
+  };
 }
 
 /** Tries to parse a json file and throws an error if parsing fails */

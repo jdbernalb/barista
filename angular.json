@@ -3327,6 +3327,68 @@
           }
         }
       }
+    },
+    "package-elements": {
+      "projectType": "library",
+      "root": "libs/fluid-elements",
+      "sourceRoot": "libs/fluid-elements",
+      "architect": {
+        "build": {
+          "builder": "@dynatrace/barista-builders:elements",
+          "options": {
+            "releasePackageJson": "libs/fluid-elements/package.json",
+            "outputPath": "dist/libs/fluid-elements",
+            "buildTag": "scope:elements"
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "sourceMap": false
+            }
+          }
+        }
+      }
+    },
+    "fluid-button": {
+      "root": "libs/fluid-elements/button",
+      "sourceRoot": "libs/fluid-elements/button/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "options": {
+            "outputPath": "dist/libs/fluid-elements/button",
+            "main": "libs/fluid-elements/button/src/index.ts",
+            "tsConfig": "libs/fluid-elements/button/tsconfig.lib.json",
+            "webpackConfig": "libs/fluid-elements/webpack.conf.js"
+          },
+          "configurations": {
+            "production": {
+              "extractLicenses": true,
+              "optimization": true
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/fluid-elements/button/tsconfig.lib.json",
+              "libs/fluid-elements/button/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/fluid-elements/button/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/fluid-elements/button/jest.config.js",
+            "tsConfig": "libs/fluid-elements/button/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "defaultProject": "dev",
