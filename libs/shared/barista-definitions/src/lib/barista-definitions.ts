@@ -155,3 +155,16 @@ export type BaContentTypes =
   | BaIndexPageContent
   | BaIconOverviewPageContent
   | BaCategoryNavigationContent;
+
+/** UX Decision Graph data */
+export interface BaUxdNode {
+  id: number;
+  text: string;
+  start: boolean;
+  path: BaUxdEdge[];
+}
+
+export interface BaUxdEdge {
+  text: string;
+  uxd_node: number; // uxd_node id
+}

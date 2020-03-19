@@ -31,6 +31,7 @@ import {
   internalLinksTransformerFactory,
 } from './transform';
 import { BaPageBuilder, BaPageBuildResult, BaPageTransformer } from './types';
+import { uxDecisionGraphGenerator } from './generators/ux-decision-graph';
 
 // Add your page-builder to this map to register it.
 const BUILDERS = new Map<string, BaPageBuilder>([
@@ -143,6 +144,7 @@ async function buildPages(): Promise<void[]> {
 
   const allPages = await Promise.all(files);
   const overviewPages = await overviewBuilder();
+  await uxDecisionGraphGenerator(); // TODO: should this only be built for the internal version?
 
   return [...allPages, ...overviewPages];
 }
