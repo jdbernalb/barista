@@ -8,7 +8,8 @@
     "target": "es5",
     "types": ["node"],
     "lib": ["es2017"],
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "esModuleInterop": true
   },
   "include": ["**/*.ts", "**/*.json"],
   "exclude": ["node_modules", "dist", "tsconfig.json"]

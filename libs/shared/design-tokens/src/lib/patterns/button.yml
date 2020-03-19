@@ -1,0 +1,17 @@
+imports:
+  - "../aliases/spacing.alias.yml"
+  - "../aliases/palette.alias.yml"
+
+props:
+  - name: fluid-button--padding
+    value: '{!spacing--0} {!spacing--medium}'
+    comment: >
+      This is a multi line comment in
+      the yaml file, how does it deal?
+    meta:
+      friendlyName: "Fluid button padding"
+      customizable: true
+
+global:
+  type: token
+  category: global

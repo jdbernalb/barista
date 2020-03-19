@@ -15,6 +15,16 @@
       "implementation": "./packager/index",
       "schema": "./packager/schema.json",
       "description": "Run packaging steps"
+    },
+    "design-tokens-build": {
+      "implementation": "./design-tokens/build/index",
+      "schema": "./design-tokens/build/schema.json",
+      "description": "Run design tokens build"
+    },
+    "design-tokens-package": {
+      "implementation": "./design-tokens/package/index",
+      "schema": "./design-tokens/package/schema.json",
+      "description": "Run design tokens packager"
     }
   }
 }

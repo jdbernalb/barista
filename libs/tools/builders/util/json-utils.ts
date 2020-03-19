@@ -42,6 +42,11 @@ export interface PackageJson {
   dependencies: {
     [key: string]: string;
   };
+  devDependencies: {
+    [key: string]: string;
+  };
+  license?: string;
+  author?: string;
 }
 
 /** Tries to parse a json file and throws an error if parsing fails */

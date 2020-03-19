@@ -1,0 +1,38 @@
+aliases:
+  color-key-lighter: "#E4E6FF"
+  color-key-light: "#8080FF"
+  color-key-base: "#534DFF"
+  color-key-dark: "#2B00B3"
+  color-key-darker: "#1B0050"
+
+  color-neutral-lighter: "#F3F5F7"
+  color-neutral-light: "#D0D7E2"
+  color-neutral-base: "#98A1B4"
+  color-neutral-dark: "#606C84"
+  color-neutral-darker: "#353C4B"
+
+  color-error-lighter: "#FFE6E5"
+  color-error-light: "#EE9392"
+  color-error-base: "#DC3F3C"
+  color-error-dark: "#991C1A"
+  color-error-darker: "#440909"
+
+  color-warning-lighter: "#FFF6DE"
+  color-warning-light: "#FED380"
+  color-warning-base: "#FFD700"
+  color-warning-dark: "#B17505"
+  color-warning-darker: "#4D3200"
+
+  color-positive-lighter: "#DFFDF0"
+  color-positive-light: "#93E9C3"
+  color-positive-base: "#42D695"
+  color-positive-dark: "#106944"
+  color-positive-darker: "#034027"
+
+  color-black: "#000000"
+  color-white: "#FFFFFF"
+
+
+global:
+  type: color
+  category: color
