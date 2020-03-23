@@ -196,9 +196,9 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
       this._observer = new window.ResizeObserver(_ => {
         this._resizeObserver$.next();
       });
-    }
 
-    this._observer.observe(this._trackWrapper.nativeElement);
+      this._observer.observe(this._trackWrapper.nativeElement);
+    }
 
     this._clientRect$ = merge(
       this._resizeObserver$.pipe(debounceTime(50)),
@@ -216,7 +216,9 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
-    this._observer.unobserve(this._trackWrapper.nativeElement);
+    if (this._platform.isBrowser && 'ResizeObserver' in window) {
+      this._observer.unobserve(this._trackWrapper.nativeElement);
+    }
   }
 
   private _updateInput(value: number): void {
