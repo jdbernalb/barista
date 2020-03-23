@@ -1,0 +1,11 @@
+<p>ba-decision-graph works!</p>
+
+<div *ngFor="let step of decisionGraphSteps">
+  {{step.text}}<br />
+  <div *ngIf="step.path.length">
+    <button *ngFor="let edge of step.path" (click)="setNextNode(edge.uxd_node)">
+      {{edge.text}}
+    </button>
+  </div>
+  <hr />
+</div>

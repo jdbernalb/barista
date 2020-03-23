@@ -36,6 +36,8 @@ import { BaRoutingModule } from './app.routing.module';
 import { BaFooter } from './components/footer';
 import { BaNav } from './components/nav';
 import { BaScrollToTop } from './components/scroll-to-top';
+import { BaSidenav } from '../pages/single-page/components/sidenav';
+import { BaPageHeader } from '../pages/single-page/components/page-header';
 
 @NgModule({
   imports: [
@@ -54,7 +56,14 @@ import { BaScrollToTop } from './components/scroll-to-top';
     DtTagModule,
     DtBreadcrumbsModule,
   ],
-  declarations: [BaApp, BaScrollToTop, BaNav, BaFooter],
+  declarations: [
+    BaApp,
+    BaScrollToTop,
+    BaNav,
+    BaFooter,
+    BaSidenav,
+    BaPageHeader,
+  ],
   providers: [BaPageService, BaPageGuard],
   bootstrap: [BaApp],
 })

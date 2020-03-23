@@ -100,7 +100,7 @@ export const homepageBuilder: BaPageBuilder = async () => {
 
     homepageCTA = await fetchContentItemById<BaStrapiCTA>(
       BaStrapiContentType.CTAs,
-      '1',
+      '2',
       { publicContent: isPublicBuild() },
       environment.strapiEndpoint,
     );

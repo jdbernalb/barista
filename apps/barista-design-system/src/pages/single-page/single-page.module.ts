@@ -28,8 +28,8 @@ import { BaContributors } from './components/contributors';
 import { BaIconOverviewContent } from './components/icon-overview-content';
 import { BaLazyIcon } from './components/lazy-icon';
 import { BaPageFooter } from './components/page-footer';
-import { BaPageHeader } from './components/page-header';
-import { BaSidenav } from './components/sidenav';
+// import { BaPageHeader } from './components/page-header';
+// import { BaSidenav } from './components/sidenav';
 import { BaToc } from './components/toc';
 import { BaPageContent } from './page-content';
 import { BaSinglePage } from './single-page';
@@ -58,11 +58,11 @@ export const routes: Route[] = [
     BaSinglePage,
     BaPageContent,
     BaPageFooter,
-    BaPageHeader,
+    // BaPageHeader,
     BaIconOverviewContent,
     BaContributors,
     BaLazyIcon,
-    BaSidenav,
+    // BaSidenav,
     BaToc,
   ],
   providers: [BaRecentlyOrderedService, BaScrollSpyService, BaTocService],
