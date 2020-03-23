@@ -17,6 +17,16 @@
 // tslint:disable no-lifecycle-call no-use-before-declare no-magic-numbers
 // tslint:disable no-any max-file-line-count no-unbound-method use-component-selector
 
+import {
+  DOWN_ARROW,
+  END,
+  HOME,
+  LEFT_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
+  RIGHT_ARROW,
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
 import { Component, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -26,19 +36,6 @@ import {
 } from '@dynatrace/testing/browser';
 import { DtSlider } from './slider';
 import { DtSliderModule } from './slider-module';
-import {
-  LEFT_ARROW,
-  DOWN_ARROW,
-  RIGHT_ARROW,
-  UP_ARROW,
-  PAGE_UP,
-  // HOME,
-  // END,
-  // PAGE_UP,
-  PAGE_DOWN,
-  HOME,
-  END,
-} from '@angular/cdk/keycodes';
 
 const getElements = (fixture: ComponentFixture<TestApp>): any => {
   return {
@@ -78,7 +75,6 @@ describe('DtSlider', () => {
     });
 
     it('should be present', () => {
-      fixture.detectChanges();
       expect(testComponent).toBeTruthy();
     });
 
@@ -197,7 +193,6 @@ describe('DtSlider', () => {
       } = getElements(fixture);
 
       dispatchKeyboardEvent(sliderWrapper, 'keydown', RIGHT_ARROW);
-      fixture.detectChanges();
 
       expect(testComponent.slider.value).toBe(2);
       expect(inputField.value).toBe('2');
@@ -216,7 +211,6 @@ describe('DtSlider', () => {
       } = getElements(fixture);
 
       dispatchKeyboardEvent(sliderWrapper, 'keydown', UP_ARROW);
-      fixture.detectChanges();
 
       expect(testComponent.slider.value).toBe(2);
       expect(inputField.value).toBe('2');
@@ -235,7 +229,6 @@ describe('DtSlider', () => {
       } = getElements(fixture);
 
       dispatchKeyboardEvent(sliderWrapper, 'keydown', LEFT_ARROW);
-      fixture.detectChanges();
 
       expect(testComponent.slider.value).toBe(0);
       expect(inputField.value).toBe('0');
@@ -254,7 +247,6 @@ describe('DtSlider', () => {
       } = getElements(fixture);
 
       dispatchKeyboardEvent(sliderWrapper, 'keydown', DOWN_ARROW);
-      fixture.detectChanges();
 
       expect(testComponent.slider.value).toBe(0);
       expect(inputField.value).toBe('0');
@@ -274,7 +266,6 @@ describe('DtSlider', () => {
     });
 
     it('should be present', () => {
-      fixture.detectChanges();
       expect(testComponent).toBeTruthy();
     });
 
@@ -319,7 +310,6 @@ describe('DtSlider', () => {
       } = getElements(fixture);
 
       dispatchKeyboardEvent(sliderWrapper, 'keydown', PAGE_UP);
-      fixture.detectChanges();
 
       expect(testComponent.slider.value).toBe(55.5);
       expect(inputField.value).toBe('55.5');
@@ -342,7 +332,6 @@ describe('DtSlider', () => {
       } = getElements(fixture);
 
       dispatchKeyboardEvent(sliderWrapper, 'keydown', PAGE_DOWN);
-      fixture.detectChanges();
 
       expect(testComponent.slider.value).toBe(45.5);
       expect(inputField.value).toBe('45.5');
@@ -363,7 +352,6 @@ describe('DtSlider', () => {
       } = getElements(fixture);
 
       dispatchKeyboardEvent(sliderWrapper, 'keydown', HOME);
-      fixture.detectChanges();
 
       expect(testComponent.slider.value).toBe(0);
       expect(inputField.value).toBe('0');
@@ -382,7 +370,6 @@ describe('DtSlider', () => {
       } = getElements(fixture);
 
       dispatchKeyboardEvent(sliderWrapper, 'keydown', END);
-      fixture.detectChanges();
 
       expect(testComponent.slider.value).toBe(100);
       expect(inputField.value).toBe('100');

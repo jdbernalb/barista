@@ -29,11 +29,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import {
-  clamp,
-  roundToDecimal,
-  isDefined,
-} from '@dynatrace/barista-components/core';
+import { clamp, isDefined } from '@dynatrace/barista-components/core';
 import { DtInput } from '@dynatrace/barista-components/input';
 import {
   fromEvent,
@@ -67,6 +63,12 @@ import {
   PAGE_DOWN,
 } from '@angular/cdk/keycodes';
 import { Platform } from '@angular/cdk/platform';
+import {
+  getKeyCodeValue,
+  getSliderValueForCoordinate,
+  getSliderPositionBasedOnValue,
+  roundToSnap,
+} from './slider-utils';
 
 let uniqueId = 0;
 
@@ -350,63 +352,3 @@ export class DtSliderLabel {}
   },
 })
 export class DtSliderUnit {}
-
-function getSliderValueForCoordinate(config: {
-  coordinate: number;
-  width: number;
-  offset: number;
-  max: number;
-  min: number;
-  step: number;
-  roundShift: number;
-}): number {
-  const valueRange = config.max - config.min;
-  const distanceFromStart = config.coordinate - config.offset;
-  const calculatedValue =
-    config.min + (distanceFromStart / config.width) * valueRange;
-  const snapped = roundToSnap(
-    calculatedValue,
-    config.step,
-    config.min,
-    config.max,
-  );
-  return roundToDecimal(snapped, config.roundShift);
-}
-
-function roundToSnap(
-  inputValue: number,
-  step: number,
-  min: number,
-  max: number,
-): number {
-  return clamp(Math.round(inputValue / step) * step, min, max);
-}
-
-function getSliderPositionBasedOnValue(config: {
-  value: number;
-  min: number;
-  max: number;
-}): number {
-  return (config.value - config.min) / (config.max - config.min);
-}
-
-function getKeyCodeValue(max: number, step: number, keyCode: number): number {
-  switch (keyCode) {
-    case LEFT_ARROW:
-    case DOWN_ARROW:
-      return -step;
-    case RIGHT_ARROW:
-    case UP_ARROW:
-      return step;
-    case HOME:
-      return -max;
-    case END:
-      return max;
-    case PAGE_UP:
-      return step * 10;
-    case PAGE_DOWN:
-      return -step * 10;
-    default:
-      return 0;
-  }
-}
