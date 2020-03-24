@@ -23,6 +23,7 @@ import {
   PAGE_UP,
   RIGHT_ARROW,
   UP_ARROW,
+  SHIFT,
 } from '@angular/cdk/keycodes';
 import {
   getKeyCodeValue,
@@ -102,6 +103,8 @@ describe('unit test functions', () => {
       expect(getKeyCodeValue(5.67, 1, PAGE_DOWN)).toBe(-10);
       expect(getKeyCodeValue(1, 5, PAGE_DOWN)).toBe(-50);
       expect(getKeyCodeValue(100, 0.2, PAGE_DOWN)).toBe(-2);
+
+      expect(getKeyCodeValue(100, 0.2, SHIFT)).toBe(0); //default is 0
     });
   });
   describe('getSliderValueForCoordinate', () => {

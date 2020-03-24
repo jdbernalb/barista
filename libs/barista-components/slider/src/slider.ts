@@ -15,6 +15,17 @@
  */
 
 import {
+  DOWN_ARROW,
+  END,
+  HOME,
+  LEFT_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
+  RIGHT_ARROW,
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
+import { Platform } from '@angular/cdk/platform';
+import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
@@ -23,50 +34,39 @@ import {
   EventEmitter,
   Input,
   NgZone,
+  OnDestroy,
+  OnInit,
   Output,
   ViewChild,
   ViewEncapsulation,
-  OnDestroy,
-  OnInit,
 } from '@angular/core';
 import { clamp, isDefined } from '@dynatrace/barista-components/core';
 import { DtInput } from '@dynatrace/barista-components/input';
 import {
+  BehaviorSubject,
   fromEvent,
   merge,
-  of,
-  animationFrameScheduler,
-  Subject,
-  BehaviorSubject,
   Observable,
+  of,
+  Subject,
+  animationFrameScheduler,
 } from 'rxjs';
 import {
+  debounceTime,
   distinctUntilChanged,
+  filter,
   map,
+  share,
   switchMap,
   takeUntil,
-  observeOn,
-  share,
-  withLatestFrom,
   tap,
-  debounceTime,
-  filter,
+  withLatestFrom,
+  observeOn,
 } from 'rxjs/operators';
 import {
-  LEFT_ARROW,
-  DOWN_ARROW,
-  RIGHT_ARROW,
-  UP_ARROW,
-  HOME,
-  END,
-  PAGE_UP,
-  PAGE_DOWN,
-} from '@angular/cdk/keycodes';
-import { Platform } from '@angular/cdk/platform';
-import {
   getKeyCodeValue,
-  getSliderValueForCoordinate,
   getSliderPositionBasedOnValue,
+  getSliderValueForCoordinate,
   roundToSnap,
 } from './slider-utils';
 

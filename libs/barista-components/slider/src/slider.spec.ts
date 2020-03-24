@@ -28,11 +28,17 @@ import {
   UP_ARROW,
 } from '@angular/cdk/keycodes';
 import { Component, ViewChild } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
   createComponent,
   dispatchKeyboardEvent,
+  dispatchMouseEvent,
 } from '@dynatrace/testing/browser';
 import { DtSlider } from './slider';
 import { DtSliderModule } from './slider-module';
@@ -70,8 +76,26 @@ describe('DtSlider', () => {
     let testComponent: TestApp;
 
     beforeEach(() => {
-      fixture = createComponent(TestApp);
+      fixture = TestBed.createComponent(TestApp);
       testComponent = fixture.componentInstance;
+
+      const el: HTMLElement = fixture.debugElement.query(
+        By.css('.dt-slider-wrapper'),
+      ).nativeElement;
+
+      jest.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+        bottom: 100,
+        height: 100,
+        left: 0,
+        right: 100,
+        top: 0,
+        width: 100,
+        x: 0,
+        y: 0,
+        toJSON: () => '',
+      });
+
+      fixture.detectChanges();
     });
 
     it('should be present', () => {
@@ -254,6 +278,103 @@ describe('DtSlider', () => {
       expect(sliderFill.style.transform).toBe('scale3d(0, 1, 1)');
       expect(sliderBackground.style.transform).toBe('scale3d(1, 1, 1)');
     });
+
+    it('should change its value based on mouse events (click to 0)', () => {
+      const {
+        inputField,
+        sliderThumb,
+        sliderFill,
+        sliderBackground,
+        sliderWrapper,
+      } = getElements(fixture);
+
+      dispatchMouseEvent(sliderWrapper, 'click', 0);
+
+      expect(testComponent.slider.value).toBe(0);
+      expect(inputField.value).toBe('0');
+      expect(sliderThumb.style.transform).toBe('translateX(-100%)');
+      expect(sliderFill.style.transform).toBe('scale3d(0, 1, 1)');
+      expect(sliderBackground.style.transform).toBe('scale3d(1, 1, 1)');
+    });
+
+    it('should change its value based on mouse events (click middle)', () => {
+      const {
+        inputField,
+        sliderThumb,
+        sliderFill,
+        sliderBackground,
+        sliderWrapper,
+      } = getElements(fixture);
+
+      dispatchMouseEvent(sliderWrapper, 'click', 50);
+
+      expect(testComponent.slider.value).toBe(5);
+      expect(inputField.value).toBe('5');
+      expect(sliderThumb.style.transform).toBe('translateX(-50%)');
+      expect(sliderFill.style.transform).toBe('scale3d(0.5, 1, 1)');
+      expect(sliderBackground.style.transform).toBe('scale3d(0.5, 1, 1)');
+    });
+
+    it('should change its value based on mouse events (click over max)', () => {
+      const {
+        inputField,
+        sliderThumb,
+        sliderFill,
+        sliderBackground,
+        sliderWrapper,
+      } = getElements(fixture);
+
+      dispatchMouseEvent(sliderWrapper, 'click', 150);
+
+      expect(testComponent.slider.value).toBe(10);
+      expect(inputField.value).toBe('10');
+      expect(sliderThumb.style.transform).toBe('translateX(-0%)');
+      expect(sliderFill.style.transform).toBe('scale3d(1, 1, 1)');
+      expect(sliderBackground.style.transform).toBe('scale3d(0, 1, 1)');
+    });
+
+    it('should change its value based on mouse events (drag)', fakeAsync(() => {
+      const {
+        inputField,
+        sliderThumb,
+        sliderFill,
+        sliderBackground,
+        sliderWrapper,
+      } = getElements(fixture);
+
+      dispatchMouseEvent(sliderWrapper, 'mousedown', 150);
+      dispatchMouseEvent(sliderWrapper, 'mousemove', 10);
+
+      expect(testComponent.slider.value).toBe(1);
+      expect(inputField.value).toBe('1');
+      expect(sliderThumb.style.transform).toBe('translateX(-90%)');
+      expect(sliderFill.style.transform).toBe('scale3d(0.1, 1, 1)');
+      expect(sliderBackground.style.transform).toBe('scale3d(0.9, 1, 1)');
+
+      dispatchMouseEvent(window, 'mousemove', 80);
+      tick(10000);
+
+      expect(testComponent.slider.value).toBe(8);
+      expect(inputField.value).toBe('8');
+      expect(sliderThumb.style.transform).toBe('translateX(-20%)');
+      expect(sliderFill.style.transform).toBe('scale3d(0.8, 1, 1)');
+      expect(sliderBackground.style.transform).toBe(
+        'scale3d(0.19999999999999996, 1, 1)',
+      );
+
+      dispatchMouseEvent(window, 'mouseup', 10);
+      tick(10000);
+      dispatchMouseEvent(window, 'mousemove', 10);
+      tick(10000);
+      //there was a mouseup, so mousemove should not trigger any value change
+      expect(testComponent.slider.value).toBe(8);
+      expect(inputField.value).toBe('8');
+      expect(sliderThumb.style.transform).toBe('translateX(-20%)');
+      expect(sliderFill.style.transform).toBe('scale3d(0.8, 1, 1)');
+      expect(sliderBackground.style.transform).toBe(
+        'scale3d(0.19999999999999996, 1, 1)',
+      );
+    }));
   });
 
   describe('bigger, with fraction step slider', () => {
