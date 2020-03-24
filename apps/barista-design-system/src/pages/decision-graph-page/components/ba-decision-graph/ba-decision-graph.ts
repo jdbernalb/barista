@@ -17,6 +17,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BaPageService } from 'apps/barista-design-system/src/shared/services/page.service';
 import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'ba-decision-graph',
@@ -30,8 +31,14 @@ export class BaDecisionGraphComponent implements OnInit {
   decisionGraphData: BaUxdNode[] = [];
   decisionGraphSteps: BaUxdNode[] = [];
 
+  _undoStep: boolean = false;
+  prevNodeId: number;
+
   //TODO: add correct Type (add to pageservice)
-  constructor(private _pageService: BaPageService<any>) {}
+  constructor(
+    private _pageService: BaPageService<any>,
+    private _sanitizer: DomSanitizer,
+  ) {}
 
   ngOnInit(): void {
     this._decisionGraphData$.subscribe(data => {
@@ -40,22 +47,40 @@ export class BaDecisionGraphComponent implements OnInit {
     });
   }
 
-  //TODO: this
-  sanitizeNodeHtml(): void {}
+  getSanitizedNodeText(nodeId: number): SafeHtml {
+    this.decisionGraphSteps.find(data => {
+      console.log(data);
+    });
+    return this._sanitizer.bypassSecurityTrustHtml(
+      this.decisionGraphData[nodeId].text,
+    );
+  }
 
   getStartNodes(): void {
     this.decisionGraphData.forEach(dataNode => {
       if (dataNode.start) {
         this.decisionGraphSteps.push(dataNode);
       }
+      console.log(this.decisionGraphSteps);
     });
   }
 
-  setNextNode(nextNodeId: number): void {
+  setNextNode(nextNodeId: number, prevNodeId: number): void {
     const nextNode = this.decisionGraphData.find(node => {
       return node.id === nextNodeId;
     });
     // TODO: better check and error handling
     this.decisionGraphSteps.push(nextNode!);
+    if (!this._undoStep) {
+      this._undoStep = true;
+    }
+    this.prevNodeId = prevNodeId;
+  }
+
+  undoLastStep(): void {
+    this.decisionGraphSteps.splice(this.decisionGraphSteps.length - 1, 1);
+    if (this.decisionGraphSteps.length <= 1) {
+      this._undoStep = false;
+    }
   }
 }

@@ -1,9 +1,13 @@
-<p>ba-decision-graph works!</p>
-
+<div *ngIf="_undoStep"><button (click)="undoLastStep()">Undo</button></div>
 <div *ngFor="let step of decisionGraphSteps">
-  {{step.text}}<br />
+  {{step.id}}
+  <div [innerHTML]="getSanitizedNodeText(step.id)"></div>
+  <br />
   <div *ngIf="step.path.length">
-    <button *ngFor="let edge of step.path" (click)="setNextNode(edge.uxd_node)">
+    <button
+      *ngFor="let edge of step.path"
+      (click)="setNextNode(edge.uxd_node, step.id)"
+    >
       {{edge.text}}
     </button>
   </div>
