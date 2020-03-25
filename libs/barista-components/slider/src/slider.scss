@@ -1,15 +1,11 @@
 @import '../../core/src/style/variables';
 
-@mixin animateSlider {
-  transition: transform 0.1s;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .dt-slider-background,
   .dt-slider-fill,
   .dt-slider-thumb-wrapper {
-    @include animateSlider();
+    transition: transform 0.1s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 

@@ -45,7 +45,6 @@ import { DtSelectModule } from '@dynatrace/barista-components/select';
 import { DtShowMoreModule } from '@dynatrace/barista-components/show-more';
 import { DtStepperModule } from '@dynatrace/barista-components/stepper';
 import { DtSliderModule } from '@dynatrace/barista-components/slider';
-import { DtSliderLabelModule } from '@dynatrace/barista-components/slider-label';
 import { DtSwitchModule } from '@dynatrace/barista-components/switch';
 import { DtTableModule } from '@dynatrace/barista-components/table';
 import { DtTagModule } from '@dynatrace/barista-components/tag';

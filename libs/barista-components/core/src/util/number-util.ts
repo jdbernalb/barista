@@ -19,8 +19,10 @@ export function clamp(v: number, min: number = 0, max: number = 100): number {
   return Math.max(min, Math.min(max, v));
 }
 
-// TODO: Temporary, because a better solution is needed. 
-/** Rounding to a spcific number of decimal spaces. */
+/**
+ * Rounding to a specific number of decimal spaces.
+ * TODO: Temporary, because a better solution is needed to avoid rounding issues.
+ */
 export function roundToDecimal(toRound: number, decimals: number = 5): number {
   return (
     Math.round((toRound + Number.EPSILON) * 10 ** decimals) / 10 ** decimals

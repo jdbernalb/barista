@@ -119,10 +119,15 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   private inputFieldValue$ = new Subject<number>();
 
   /**
-   * Bindings for the minimum and maximum values of the slider.
-   * TODO: getters and setters here?
+   * Binding for the minimum value of the slider.
+   * TODO: getter and setter
    */
   @Input() min: number = 0;
+
+  /**
+   * Binding for the maximum value of the slider.
+   * TODO: getter and setter
+   */
   @Input() max: number = 100;
 
   /**
@@ -152,8 +157,9 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   /** TODO: implement the usage of this binding */
   @Input() disabled: boolean = false;
 
-  private _value: number;
-
+  /**
+   * The binding for the value of the slider.
+   */
   @Input()
   get value(): number {
     return this._value;
@@ -161,6 +167,7 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   set value(value: number) {
     this._updateValue(value);
   }
+  private _value: number;
 
   /** Updates the value if the update is triggered by the consumer. */
   private _updateValue(value: number, userTriggered: boolean = true): void {
@@ -241,12 +248,12 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
-    if (this._platform.isBrowser && 'ResizeObserver' in window) {
-      this._observer.unobserve(this._trackWrapper.nativeElement);
+    if (this._platform.isBrowser && this._observer) {
+      this._observer.disconnect();
     }
   }
 
-  /** Updates the input field vit new value. */
+  /** Updates the input field with new value. */
   private _updateInput(value: number): void {
     this._sliderInput.value = value.toString();
   }

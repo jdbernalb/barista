@@ -119,6 +119,7 @@ const routes: Routes = [
   { path: 'secondary-nav', component: SecondaryNavDemo },
   { path: 'select', component: SelectDemo },
   { path: 'show-more', component: ShowMoreDemo },
+  { path: 'stepper', component: StepperDemo },
   { path: 'switch', component: SwitchDemo },
   { path: 'table', component: TableDemo },
   { path: 'tabs', component: TabsDemo },
