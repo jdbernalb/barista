@@ -70,6 +70,7 @@ import {
   roundToSnap,
 } from './slider-utils';
 
+/** We need unique ids in order to have correct labeling. */
 let uniqueId = 0;
 
 const KEY_CODES_ARRAY: Array<number> = [
@@ -97,20 +98,36 @@ declare const window: any;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
+  /**
+   * Holds the value, the rounding is shifted with.
+   * Calculated based in the step, to avoid JS rounding problems.
+   */
   private _roundShift: number = 0;
 
   /** @internal Unique id for this input. */
   _labelUid = `dt-slider-label-${uniqueId++}`;
 
+  /** Holds the value of the slider. */
   private _value$ = new BehaviorSubject<number>(30);
+  /** Holds the description of the size of the slider. */
   private _clientRect$: Observable<ClientRect>;
+  /** Observer that gets triggered if the slider is resized on the screen. */
   private _resizeObserver$ = new Subject();
+  /** Variable to hold the ResizeObserver */
   private _observer: any;
+  /** Observer that gets triggered if the input field value is changed. */
   private inputFieldValue$ = new Subject<number>();
 
+  /**
+   * Bindings for the minimum and maximum values of the slider.
+   * TODO: getters and setters here?
+   */
   @Input() min: number = 0;
   @Input() max: number = 100;
 
+  /**
+   * Bindings for the step, if changed, roundShift needs to be recalculated.
+   */
   @Input()
   get step(): number {
     return this._step;
@@ -129,8 +146,10 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
       this._roundShift++;
     }
   }
+  /** Holds the value of step internally */
   private _step: number = 5;
 
+  /** TODO: implement the usage of this binding */
   @Input() disabled: boolean = false;
 
   private _value: number;
@@ -143,23 +162,26 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
     this._updateValue(value);
   }
 
+  /** Updates the value if the update is triggered by the consumer. */
   private _updateValue(value: number, userTriggered: boolean = true): void {
     this._value = value;
+    // We only need to update if the update is coming from outside the component.
     if (userTriggered) {
       this._value$.next(roundToSnap(value, this.step, this.min, this.max));
     }
   }
 
+  /**
+   * Convert input string value to number and call
+   * roundToSnap takes care of snapping the values to the steps
+   */
   inputValueChanged(event: Event): void {
-    /**
-     * Convert input string value to number and call
-     * roundToSnap takes care of snapping the values to the steps
-     */
     this.inputFieldValue$.next(
       +(event.currentTarget as HTMLInputElement).value,
     );
   }
 
+  /** Provides event for value change */
   @Output() change = new EventEmitter<number>();
 
   /** @internal Holds the track wrapper */
@@ -182,6 +204,7 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild(DtInput, { static: true })
   _sliderInput: DtInput;
 
+  /** Observer that completes on ngOnDestroy */
   private _destroy$ = new Subject<void>();
 
   constructor(private _zone: NgZone, private _platform: Platform) {}
@@ -204,7 +227,7 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
 
     this._clientRect$ = merge(
       this._resizeObserver$.pipe(debounceTime(50)),
-      of(null),
+      of(null), // at least one initial trigger is needed
     ).pipe(
       map(() => this._trackWrapper.nativeElement.getBoundingClientRect()),
       takeUntil(this._destroy$),
@@ -223,10 +246,15 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
+  /** Updates the input field vit new value. */
   private _updateInput(value: number): void {
     this._sliderInput.value = value.toString();
   }
 
+  /**
+   * Capture user events, and implement necessary streams to update view.
+   * TODO: refactor this to have cleaner streams, and possibly refactor into smaller functions.
+   */
   private _captureEvents(): void {
     const start$ = merge(
       fromEvent(this._trackWrapper.nativeElement, 'mousedown'),
@@ -247,6 +275,7 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
       fromEvent(window, 'touchend'),
     );
 
+    /** Combining the start, move and moveEnd observers concludes the drag observer. */
     const drag$ = start$.pipe(
       switchMap(() =>
         move$.pipe(
@@ -303,8 +332,10 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
     );
 
     const inputValue$ = this.inputFieldValue$.pipe(
-      // distinctUntilChanged() purposefully left out, to round the value
-      // and update the input field with the rounded value
+      /**
+       * distinctUntilChanged() purposefully left out, to round the value
+       * and update the input field with the rounded value
+       */
       map(value => roundToSnap(value, this.step, this.min, this.max)),
       takeUntil(this._destroy$),
     );
@@ -338,12 +369,28 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   }
 }
 
+/**
+ * The main label for the slider.
+ *
+ * @example
+ *   <dt-slider [value]="1" [min]="0" [max]="10" [step]="1">
+ *     <dt-slider-label>label</dt-slider-label>
+ *   </dt-slider>
+ */
 @Directive({
   selector: `dt-slider-label, [dt-slider-label], [dtSliderLabel]`,
   exportAs: 'dtSliderLabel',
 })
 export class DtSliderLabel {}
 
+/**
+ * The label for the unit of the slider.
+ *
+ * @example
+ *   <dt-slider [value]="1" [min]="0" [max]="10" [step]="1">
+ *     <dt-slider-unit>units</dt-slider-unit>
+ *   </dt-slider>
+ */
 @Directive({
   selector: `dt-slider-unit, [dt-slider-unit], [dtSliderUnit]`,
   exportAs: 'dtSliderUnit',

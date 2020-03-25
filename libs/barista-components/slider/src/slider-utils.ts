@@ -26,6 +26,11 @@ import {
   PAGE_DOWN,
 } from '@angular/cdk/keycodes';
 
+/**
+ * Returns the value that is represented by a coordinate on the slider.
+ * This calculation needs all the values on the config parameter in order to work properly.
+ * @param config Holds the values representing the slider, and is properties on the view.
+ */
 export function getSliderValueForCoordinate(config: {
   coordinate: number;
   width: number;
@@ -48,6 +53,14 @@ export function getSliderValueForCoordinate(config: {
   return roundToDecimal(snapped, config.roundShift);
 }
 
+/**
+ * The function calculates the proper value on the slider. It adds the
+ * snapping behavior by rounding the value. It also clamps the value between min and max.
+ * @param inputValue the value that needs to be rounded
+ * @param step the step value
+ * @param min the minimum value
+ * @param max the maximum value
+ */
 export function roundToSnap(
   inputValue: number,
   step: number,
@@ -57,6 +70,11 @@ export function roundToSnap(
   return clamp(Math.round(inputValue / step) * step, min, max);
 }
 
+/**
+ * If we already have a value for the slider, this function is able to provide
+ * the position of the thumb for that value.
+ * @param config
+ */
 export function getSliderPositionBasedOnValue(config: {
   value: number;
   min: number;
@@ -65,6 +83,13 @@ export function getSliderPositionBasedOnValue(config: {
   return (config.value - config.min) / (config.max - config.min);
 }
 
+/**
+ * This function returns how the value should change based on
+ * what key was pressed on the slider.
+ * @param max maximum value for the slider
+ * @param step step value of the slider
+ * @param keyCode the keyCode of the pressed key
+ */
 export function getKeyCodeValue(
   max: number,
   step: number,
