@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, Input } from '@angular/core';
-import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
-
-@Component({
-  selector: 'ba-decision-graph-node',
-  templateUrl: './ba-decision-graph-node.html',
-  styleUrls: ['./ba-decision-graph-node.scss'],
-})
-export class BaDecisionGraphNode implements OnInit {
-  @Input('node')
-  node: BaUxdNode;
-
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export * from './ba-decision-graph-start-node';

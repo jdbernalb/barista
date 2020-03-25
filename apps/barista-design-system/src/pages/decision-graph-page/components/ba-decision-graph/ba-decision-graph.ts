@@ -15,7 +15,6 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
 import { BaPageService } from 'apps/barista-design-system/src/shared/services/page.service';
 
@@ -37,7 +36,8 @@ export class BaDecisionGraph implements OnInit {
   /** Array of all nodes and edges which should be displayed */
   decisionGraphSteps: BaUxdNode[] = [];
 
-  selectedNode: BaUxdNode;
+  /** Contains the start node the user has picked */
+  selectedStartNode: BaUxdNode;
 
   /** @internal Whether the Undo button in template is displayed */
   _started: boolean = false;
@@ -120,5 +120,9 @@ export class BaDecisionGraph implements OnInit {
       }
     });
     return node;
+  }
+
+  setSelectedNode(selectedStartNode: BaUxdNode): void {
+    this.selectedStartNode = selectedStartNode;
   }
 }
