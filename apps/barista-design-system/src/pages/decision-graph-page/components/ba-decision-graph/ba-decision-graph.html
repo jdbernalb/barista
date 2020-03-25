@@ -1,15 +1,32 @@
-<div *ngIf="_undoStep"><button (click)="undoLastStep()">Undo</button></div>
-<div *ngFor="let step of decisionGraphSteps">
-  {{step.id}}
-  <div [innerHTML]="getSanitizedNodeText(step.id)"></div>
-  <br />
-  <div *ngIf="step.path.length">
-    <button
-      *ngFor="let edge of step.path"
-      (click)="setNextNode(edge.uxd_node, step.id)"
-    >
-      {{edge.text}}
-    </button>
+<div class="dt-uxd-startnode-grid">
+  <div *ngFor="let step of decisionGraphSteps">
+    <ba-decision-graph-node
+      [node]="step"
+      (selectedNode)="selectedNode"
+    ></ba-decision-graph-node>
+    <div *ngIf="selectedNode">{{selectedNode}}</div>
+    <div *ngIf="step.path.length && !step.start">
+      <button
+        class="dt-uxd-button"
+        [ngClass]="
+        {
+          'dt-uxd-yes': edge.text.includes('yes') || edge.selected === true,
+          'dt-uxd-no': edge.text.includes('no') || edge.selected === false
+        }"
+        [disabled]="edge.selected !== undefined"
+        *ngFor="let edge of step.path"
+        (click)="setNextNode($event, edge.uxd_node, edge.text)"
+      >
+        {{edge.text}}
+      </button>
+    </div>
   </div>
-  <hr />
+</div>
+<div *ngIf="_started">
+  <button class="dt-uxd-button dt-uxd-back-button" (click)="undoLastStep()">
+    Back
+  </button>
+  <button class="dt-uxd-start-over-button" (click)="resetProgress()">
+    Start Over
+  </button>
 </div>

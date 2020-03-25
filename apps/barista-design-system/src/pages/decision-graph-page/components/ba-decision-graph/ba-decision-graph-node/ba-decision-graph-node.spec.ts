@@ -16,20 +16,20 @@
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BaDecisionGraph } from './ba-decision-graph';
+import { BaDecisionGraphNode } from './ba-decision-graph-node';
 
-describe('BaDecisionGraph', () => {
-  let component: BaDecisionGraph;
-  let fixture: ComponentFixture<BaDecisionGraph>;
+describe('BaDecisionGraphNode', () => {
+  let component: BaDecisionGraphNode;
+  let fixture: ComponentFixture<BaDecisionGraphNode>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [BaDecisionGraph],
+      declarations: [BaDecisionGraphNode],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BaDecisionGraph);
+    fixture = TestBed.createComponent(BaDecisionGraphNode);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,10 @@
+<div class="dt-uxd-startnode" *ngIf="node.start">
+  <div
+    class="dt-uxd-startnode-content"
+    [innerHTML]="getSanitizedNodeText(node.text)"
+    (click)="startNode(node)"
+  ></div>
+</div>
+<div class="dt-uxd-node" *ngIf="!node.start">
+  <p>{{node.text}}</p>
+</div>

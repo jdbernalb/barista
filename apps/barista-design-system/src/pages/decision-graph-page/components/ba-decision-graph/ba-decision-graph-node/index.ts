@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from './ba-decision-graph';
 export * from './ba-decision-graph-node';

@@ -20,7 +20,11 @@ import { Route, RouterModule } from '@angular/router';
 import { BaPageGuard } from '../../shared/services/page-guard';
 import { BaRecentlyOrderedService } from '../../shared/services/recently-ordered.service';
 import { BaDecisionGraphPage } from './decision-graph-page';
-import { BaDecisionGraphComponent } from './components/ba-decision-graph';
+import {
+  BaDecisionGraph,
+  BaDecisionGraphNode,
+} from './components/ba-decision-graph';
+import {} from './components/ba-decision-graph/ba-decision-graph';
 
 export const routes: Route[] = [
   {
@@ -32,7 +36,7 @@ export const routes: Route[] = [
 
 @NgModule({
   imports: [CommonModule, RouterModule.forChild(routes)],
-  declarations: [BaDecisionGraphPage, BaDecisionGraphComponent],
+  declarations: [BaDecisionGraphPage, BaDecisionGraph, BaDecisionGraphNode],
   providers: [BaRecentlyOrderedService],
 })
 export class BaDecisionGraphPageModule {}

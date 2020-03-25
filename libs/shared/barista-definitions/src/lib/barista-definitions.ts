@@ -167,4 +167,5 @@ export interface BaUxdNode {
 export interface BaUxdEdge {
   text: string;
   uxd_node: number; // uxd_node id
+  selected?: boolean;
 }

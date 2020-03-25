@@ -15,30 +15,35 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { BaPageService } from 'apps/barista-design-system/src/shared/services/page.service';
-import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
+import { BaPageService } from 'apps/barista-design-system/src/shared/services/page.service';
 
 @Component({
   selector: 'ba-decision-graph',
   templateUrl: './ba-decision-graph.html',
   styleUrls: ['./ba-decision-graph.scss'],
 })
-export class BaDecisionGraphComponent implements OnInit {
-  /** @internal Data needed to render the navigation. */
-  _decisionGraphData$ = this._pageService._getPage('uxdg-data');
+export class BaDecisionGraph implements OnInit {
+  /** Data needed to render the navigation. */
+  private _decisionGraphData$ = this._pageService._getPage('uxdg-data');
 
+  /** Amount of start nodes */
+  private _numberOfStartNodes: number;
+
+  /** Array of all nodes and edges */
   decisionGraphData: BaUxdNode[] = [];
+
+  /** Array of all nodes and edges which should be displayed */
   decisionGraphSteps: BaUxdNode[] = [];
 
-  _undoStep: boolean = false;
-  prevNodeId: number;
+  selectedNode: BaUxdNode;
+
+  /** @internal Whether the Undo button in template is displayed */
+  _started: boolean = false;
 
   //TODO: add correct Type (add to pageservice)
-  constructor(
-    private _pageService: BaPageService<any>,
-    private _sanitizer: DomSanitizer,
-  ) {}
+  constructor(private _pageService: BaPageService<any>) {}
 
   ngOnInit(): void {
     this._decisionGraphData$.subscribe(data => {
@@ -47,40 +52,73 @@ export class BaDecisionGraphComponent implements OnInit {
     });
   }
 
-  getSanitizedNodeText(nodeId: number): SafeHtml {
-    this.decisionGraphSteps.find(data => {
-      console.log(data);
-    });
-    return this._sanitizer.bypassSecurityTrustHtml(
-      this.decisionGraphData[nodeId].text,
-    );
-  }
-
+  /** Gets all starting nodes from decisionGraphData */
   getStartNodes(): void {
     this.decisionGraphData.forEach(dataNode => {
       if (dataNode.start) {
         this.decisionGraphSteps.push(dataNode);
       }
-      console.log(this.decisionGraphSteps);
     });
+    this._numberOfStartNodes = this.decisionGraphSteps.length;
   }
 
-  setNextNode(nextNodeId: number, prevNodeId: number): void {
+  // TODO: Get event target from click event
+  // TODO: When Not So Sure is clicked the3n go back to first node that isn't startnode
+  /**
+   * Pushes the next node into the decisionGraphSteps array
+   * @param nextNodeId Next node id to be displayed
+   * @param _edgeText Buttontext to to be displayed
+   */
+  setNextNode(nextNodeId: number, _edgeText: string): void {
+    const currNode = this.decisionGraphSteps[
+      this.decisionGraphSteps.length - 1
+    ];
+    this.setSelectedStateOfEdge(currNode, true);
     const nextNode = this.decisionGraphData.find(node => {
       return node.id === nextNodeId;
     });
     // TODO: better check and error handling
     this.decisionGraphSteps.push(nextNode!);
-    if (!this._undoStep) {
-      this._undoStep = true;
+    if (!this._started) {
+      this._started = true;
     }
-    this.prevNodeId = prevNodeId;
   }
 
+  /** Resets the decisionGraphSteps array to only contain startNodes */
+  resetProgress(): void {
+    this.decisionGraphSteps.forEach(node => {
+      this.setSelectedStateOfEdge(node, undefined);
+    });
+    this.decisionGraphSteps.length = this._numberOfStartNodes;
+    this._started = false;
+  }
+
+  /** Removes the last step in the decisionGraphSteps array */
   undoLastStep(): void {
     this.decisionGraphSteps.splice(this.decisionGraphSteps.length - 1, 1);
-    if (this.decisionGraphSteps.length <= 1) {
-      this._undoStep = false;
+    if (this.decisionGraphSteps.length <= this._numberOfStartNodes) {
+      this._started = false;
     }
+    this.setSelectedStateOfEdge(
+      this.decisionGraphSteps[this.decisionGraphSteps.length - 1],
+      undefined,
+    );
+  }
+
+  /** Sets a nodes path.selected state */
+  setSelectedStateOfEdge(node: BaUxdNode, state?: boolean): BaUxdNode {
+    node.path.forEach(edge => {
+      switch (state) {
+        case true:
+          edge.selected = true;
+          break;
+        case false:
+          edge.selected = false;
+          break;
+        case undefined:
+          edge.selected = undefined;
+      }
+    });
+    return node;
   }
 }
