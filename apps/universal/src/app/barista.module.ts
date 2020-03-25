@@ -98,7 +98,6 @@ import { NgModule } from '@angular/core';
     DtTopBarNavigationModule,
     DtStepperModule,
     DtSliderModule,
-    DtSliderLabelModule,
     DtContainerBreakpointObserverModule,
     DtRadialChartModule,
   ],
