@@ -9,7 +9,7 @@
 </div>
 <!-- Nodes -->
 <!-- <ba-decision-graph-node [node]="selectedStartNode"></ba-decision-graph-node> -->
-<!-- <div *ngIf="selectedStartNode && selectedStartNode.path.length">
+<div *ngIf="selectedStartNode && selectedStartNode.path.length">
   <button
     class="dt-uxd-button"
     *ngFor="let edge of selectedStartNode.path"
@@ -23,7 +23,7 @@
   >
     {{edge.text}}
   </button>
-</div> -->
+</div>
 <!-- Navigation functionality -->
 <div *ngIf="_started">
   <button class="dt-uxd-button dt-uxd-back-button" (click)="undoLastStep()">
