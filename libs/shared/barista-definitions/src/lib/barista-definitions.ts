@@ -161,6 +161,7 @@ export interface BaUxdNode {
   id: number;
   text: string;
   start: boolean;
+  tasknode: boolean;
   path: BaUxdEdge[];
 }
 

@@ -24,6 +24,7 @@ import {
   BaDecisionGraph,
   BaDecisionGraphStartNode,
   BaDecisionGraphNode,
+  BaDecisionGraphTaskNode,
 } from './components/ba-decision-graph';
 import {} from './components/ba-decision-graph/ba-decision-graph';
 
@@ -40,8 +41,9 @@ export const routes: Route[] = [
   declarations: [
     BaDecisionGraphPage,
     BaDecisionGraph,
-    BaDecisionGraphStartNode,
     BaDecisionGraphNode,
+    BaDecisionGraphStartNode,
+    BaDecisionGraphTaskNode,
   ],
   providers: [BaRecentlyOrderedService],
 })

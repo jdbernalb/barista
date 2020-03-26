@@ -2,9 +2,28 @@
 @import 'colors';
 @import 'font-mixins';
 
+:host {
+  max-width: 100%;
+}
+
 ::ng-deep button {
   @include dt-interactive-reset();
   @include dt-main-font();
+}
+
+.dt-uxd-node {
+  background-color: #ddd;
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.dt-uxd-node-content {
+  margin: 4px 6px;
+}
+
+.dt-uxd-edge {
+  margin: 0 auto;
 }
 
 .dt-uxd-button {

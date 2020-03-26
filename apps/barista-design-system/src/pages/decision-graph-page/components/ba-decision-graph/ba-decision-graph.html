@@ -5,4 +5,5 @@
 <ba-decision-graph-node
   *ngIf="selectedStartNode"
   [node]="selectedStartNode"
+  (startOver)="resetProgress()"
 ></ba-decision-graph-node>

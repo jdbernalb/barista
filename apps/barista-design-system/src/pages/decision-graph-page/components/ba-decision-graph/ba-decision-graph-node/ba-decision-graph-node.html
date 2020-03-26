@@ -1,10 +1,10 @@
-<div *ngIf="node">
+<div class="dt-uxd-node" *ngIf="node">
   <div *ngFor="let node of decisionGraphSteps">
     <div
-      class="dt-uxd-node"
+      class="dt-uxd-node-content"
       [innerHTML]="getSanitizedNodeText(node.text)"
     ></div>
-    <div *ngIf="node.path.length">
+    <div class="dt-uxd-edge" *ngIf="node.path.length">
       <!--Else its last node-->
       <button
         class="dt-uxd-button"

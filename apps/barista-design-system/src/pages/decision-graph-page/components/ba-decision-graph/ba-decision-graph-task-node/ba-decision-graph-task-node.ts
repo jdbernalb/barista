@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-export * from './ba-decision-graph';
-export * from './ba-decision-graph-node';
-export * from './ba-decision-graph-start-node';
-export * from './ba-decision-graph-task-node';
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'ba-decision-graph-task-node',
+  templateUrl: './ba-decision-graph-task-node.html',
+  styleUrls: ['./ba-decision-graph-task-node.scss'],
+})
+export class BaDecisionGraphTaskNode implements OnInit {
+  ngOnInit(): void {}
+}

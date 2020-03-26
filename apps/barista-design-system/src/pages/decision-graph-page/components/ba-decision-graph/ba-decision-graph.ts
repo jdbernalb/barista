@@ -30,6 +30,8 @@ export class BaDecisionGraph implements OnInit {
   /** Amount of start nodes */
   private _numberOfStartNodes: number;
 
+  startOver: any;
+
   /** Array of all nodes and edges */
   decisionGraphData: BaUxdNode[] = [];
 
@@ -37,7 +39,7 @@ export class BaDecisionGraph implements OnInit {
   decisionGraphStartNodes: BaUxdNode[] = [];
 
   /** Contains the start node the user has picked */
-  selectedStartNode: BaUxdNode;
+  selectedStartNode: BaUxdNode | undefined;
 
   //TODO: add correct Type (add to pageservice)
   constructor(private _pageService: BaPageService<any>) {}
@@ -65,5 +67,9 @@ export class BaDecisionGraph implements OnInit {
       index = edge.uxd_node;
     });
     this.selectedStartNode = this.decisionGraphData[index];
+  }
+
+  resetProgress(): void {
+    this.selectedStartNode = undefined;
   }
 }

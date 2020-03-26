@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, Input, AfterContentInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
 import { BaPageService } from 'apps/barista-design-system/src/shared/services/page.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
@@ -27,6 +27,9 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 export class BaDecisionGraphNode implements OnInit {
   @Input('node')
   node: BaUxdNode | undefined;
+
+  @Output('startOver')
+  startOver = new EventEmitter<void>();
 
   /** Data needed to render the navigation. */
   private _decisionGraphData$ = this._pageService._getPage('uxdg-data');
@@ -85,6 +88,7 @@ export class BaDecisionGraphNode implements OnInit {
     this.decisionGraphSteps.length = 0;
     this.node = undefined;
     this._started = false;
+    this.startOver.emit();
   }
 
   /** Removes the last step in the decisionGraphSteps array */
