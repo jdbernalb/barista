@@ -1,35 +1,8 @@
-<!-- Start Nodes (grid) -->
-<div class="dt-uxd-startnode-grid">
-  <div *ngFor="let step of decisionGraphSteps">
-    <ba-decision-graph-start-node
-      [node]="step"
-      (selectedNode)="setSelectedNode($event)"
-    ></ba-decision-graph-start-node>
-  </div>
-</div>
-<!-- Nodes -->
-<!-- <ba-decision-graph-node [node]="selectedStartNode"></ba-decision-graph-node> -->
-<div *ngIf="selectedStartNode && selectedStartNode.path.length">
-  <button
-    class="dt-uxd-button"
-    *ngFor="let edge of selectedStartNode.path"
-    [ngClass]="
-      {
-        'dt-uxd-yes': edge.text.includes('yes') || edge.selected === true,
-        'dt-uxd-no': edge.text.includes('no') || edge.selected === false
-      }"
-    [disabled]="edge.selected !== undefined"
-    (click)="setNextNode($event, edge.uxd_node, edge.text)"
-  >
-    {{edge.text}}
-  </button>
-</div>
-<!-- Navigation functionality -->
-<div *ngIf="_started">
-  <button class="dt-uxd-button dt-uxd-back-button" (click)="undoLastStep()">
-    Back
-  </button>
-  <button class="dt-uxd-start-over-button" (click)="resetProgress()">
-    Start Over
-  </button>
-</div>
+<ba-decision-graph-start-node
+  [startNodes]="decisionGraphStartNodes"
+  (selectedNode)="setSelectedStartNode($event)"
+></ba-decision-graph-start-node>
+<ba-decision-graph-node
+  *ngIf="selectedStartNode"
+  [node]="selectedStartNode"
+></ba-decision-graph-node>

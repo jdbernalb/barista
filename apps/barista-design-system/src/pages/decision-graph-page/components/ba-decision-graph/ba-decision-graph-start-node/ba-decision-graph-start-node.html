@@ -1,7 +1,12 @@
-<div class="dt-uxd-startnode" *ngIf="node.start">
+<div class="dt-uxd-startnode-grid">
   <div
-    class="dt-uxd-startnode-content"
-    [innerHTML]="getSanitizedNodeText(node.text)"
-    (click)="selectedStartNode(node)"
-  ></div>
+    class="dt-uxd-startnode"
+    *ngFor="let startNode of decisionGraphStartNodes"
+  >
+    <div
+      class="dt-uxd-startnode-content"
+      [innerHTML]="getSanitizedNodeText(startNode.text)"
+      (click)="selectedStartNode(startNode)"
+    ></div>
+  </div>
 </div>

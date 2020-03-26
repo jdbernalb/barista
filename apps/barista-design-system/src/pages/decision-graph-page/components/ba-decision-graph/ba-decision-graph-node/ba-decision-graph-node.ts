@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, AfterContentInit } from '@angular/core';
 import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
+import { BaPageService } from 'apps/barista-design-system/src/shared/services/page.service';
+import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'ba-decision-graph-node',
@@ -24,9 +26,103 @@ import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
 })
 export class BaDecisionGraphNode implements OnInit {
   @Input('node')
-  node: BaUxdNode;
+  node: BaUxdNode | undefined;
 
-  constructor() {}
+  /** Data needed to render the navigation. */
+  private _decisionGraphData$ = this._pageService._getPage('uxdg-data');
 
-  ngOnInit(): void {}
+  /** Array of all nodes and edges */
+  decisionGraphData: BaUxdNode[] = [];
+
+  /** Array of all nodes and edges which should be displayed */
+  decisionGraphSteps: BaUxdNode[] = [];
+
+  /** @internal Whether the Undo button in template is displayed */
+  _started: boolean = false;
+
+  ns: number[] = [];
+
+  constructor(
+    private _pageService: BaPageService<any>,
+    private _sanitizer: DomSanitizer,
+  ) {}
+
+  ngOnInit(): void {
+    this._decisionGraphData$.subscribe(data => {
+      this.decisionGraphData = data;
+    });
+    this.decisionGraphSteps.push(this.node!);
+  }
+
+  // TODO: Get event target from click event
+  // TODO: When STARTNODE is clicked then go back to first node of clicked STARTNODE that isn't startnode
+  /**
+   * Pushes the next node into the decisionGraphSteps array
+   * @param nextNodeId Next node id to be displayed
+   * @param _edgeText Buttontext to to be displayed
+   */
+  setNextNode(nextNodeId: number, _edgeText: string): void {
+    this.setSelectedStateOfEdge(
+      this.decisionGraphSteps[this.decisionGraphSteps.length - 1],
+      true,
+    );
+    const nextNode = this.decisionGraphData.find(node => {
+      return node.id === nextNodeId;
+    });
+    // TODO: better check and error handling
+    console.log(nextNode!);
+    this.decisionGraphSteps.push(nextNode!);
+    if (!this._started) {
+      this._started = true;
+    }
+  }
+
+  /** Resets the decisionGraphSteps array to only contain startNodes */
+  resetProgress(): void {
+    this.decisionGraphSteps.forEach(node => {
+      this.setSelectedStateOfEdge(node, undefined);
+    });
+    this.decisionGraphSteps.length = 0;
+    this.node = undefined;
+    this._started = false;
+  }
+
+  /** Removes the last step in the decisionGraphSteps array */
+  undoLastStep(): void {
+    this.decisionGraphSteps.splice(this.decisionGraphSteps.length - 1, 1);
+    this.setSelectedStateOfEdge(
+      this.decisionGraphSteps[this.decisionGraphSteps.length - 1],
+      undefined,
+    );
+  }
+
+  /** Sets a nodes path.selected state */
+  setSelectedStateOfEdge(node: BaUxdNode, state?: boolean): BaUxdNode {
+    node.path.forEach(edge => {
+      switch (state) {
+        case true:
+          edge.selected = true;
+          break;
+        case false:
+          edge.selected = false;
+          break;
+        case undefined:
+          edge.selected = undefined;
+      }
+    });
+    return node;
+  }
+
+  // TODO: Error handling when undefined
+  /**
+   * Converts a string to SafeHtml using the DomSanitizer
+   * @param nodeText string to be converted to SafeHtml
+   */
+  getSanitizedNodeText(nodeText: string): SafeHtml | undefined {
+    return this._sanitizer.bypassSecurityTrustHtml(nodeText);
+  }
+
+  // setSelectedNode(selectedStartNode: BaUxdNode): void {
+  //   this.selectedStartNode = selectedStartNode;
+  // }
 }

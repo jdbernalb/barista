@@ -24,8 +24,8 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./ba-decision-graph-start-node.scss'],
 })
 export class BaDecisionGraphStartNode implements OnInit {
-  @Input('node')
-  node: BaUxdNode;
+  @Input('startNodes')
+  decisionGraphStartNodes: BaUxdNode[] = [];
 
   @Output('selectedNode')
   nodeEvent = new EventEmitter<BaUxdNode>();

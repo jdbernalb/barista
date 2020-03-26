@@ -1,0 +1,63 @@
+@import 'interactive-common';
+@import 'colors';
+@import 'font-mixins';
+
+::ng-deep button {
+  @include dt-interactive-reset();
+  @include dt-main-font();
+}
+
+.dt-uxd-button {
+  height: 32px;
+  color: white;
+  border-style: solid;
+  border-radius: 3px;
+  border-width: 1px;
+
+  &:disabled {
+    background-color: $gray-300;
+  }
+}
+
+.dt-uxd-yes {
+  background-color: $purple-600;
+
+  &:hover {
+    background-color: $purple-700;
+  }
+
+  &:active {
+    background-color: $purple-800;
+  }
+}
+
+.dt-uxd-no {
+  background-color: $red-500;
+
+  &:hover {
+    background-color: $red-600;
+  }
+
+  &:active {
+    background-color: $red-700;
+  }
+}
+
+.dt-uxd-start-over-button {
+  height: 80px;
+  border-radius: 40px;
+  background-color: $turquoise-500;
+  color: white;
+
+  &:hover {
+    background-color: $turquoise-600;
+  }
+
+  &:active {
+    background-color: $turquoise-700;
+  }
+}
+
+.dt-uxd-back-button {
+  background-color: $purple-600;
+}

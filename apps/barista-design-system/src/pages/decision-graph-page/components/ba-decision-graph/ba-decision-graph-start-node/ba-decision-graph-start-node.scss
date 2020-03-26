@@ -2,21 +2,23 @@
   display: flex;
 }
 
+.dt-uxd-startnode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .dt-uxd-startnode {
-  height: 100%;
-  width: 100%;
-  background-color: #00a1b2;
-  color: white;
+  border: 4px solid #00a1b2;
   border-radius: 3px;
   margin: 4px;
 
   &:hover {
-    background-color: #00848e;
+    border: 4px solid #00848e;
     cursor: pointer;
   }
 
   &:active {
-    background-color: #006d75;
+    border: 4px solid #006d75;
   }
 
   &:visited {
@@ -25,5 +27,5 @@
 }
 
 .dt-uxd-startnode-content {
-  margin: 4px;
+  margin: 4px 6px;
 }

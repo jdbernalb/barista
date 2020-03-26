@@ -1,1 +1,33 @@
-{{node}}
+<div *ngIf="node">
+  <div *ngFor="let node of decisionGraphSteps">
+    <div
+      class="dt-uxd-node"
+      [innerHTML]="getSanitizedNodeText(node.text)"
+    ></div>
+    <div *ngIf="node.path.length">
+      <!--Else its last node-->
+      <button
+        class="dt-uxd-button"
+        *ngFor="let edge of node.path"
+        [ngClass]="
+        {
+          'dt-uxd-yes': edge.text.includes('yes') || edge.selected === true,
+          'dt-uxd-no': edge.text.includes('no') || edge.selected === false
+        }"
+        [disabled]="edge.selected !== undefined"
+        (click)="setNextNode(edge.uxd_node, edge.text)"
+      >
+        {{edge.text}}
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Navigation functionality -->
+<div *ngIf="_started">
+  <button class="dt-uxd-button dt-uxd-back-button" (click)="undoLastStep()">
+    Back
+  </button>
+  <button class="dt-uxd-start-over-button" (click)="resetProgress()">
+    Start Over
+  </button>
+</div>
