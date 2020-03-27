@@ -27,7 +27,7 @@ dotenvConfig();
 const ROOT_DIR = join(__dirname, '../../../..');
 
 /** Root directory of the iconpack repository. */
-const ICONS_ROOT = join(__dirname, '../../../../../barista-icons/src');
+const ICONS_ROOT = ''; // join(__dirname, '../../../../../barista-icons/src');
 
 /** Path to the icons changelog relative to the iconpack root directory. */
 const ICONS_CHANGELOG = join(
