@@ -62,7 +62,7 @@ export enum BaStrapiContentType {
   Snippets = 'snippets',
   Pageteasers = 'pageteasers',
   CTAs = 'ctas',
-  UXDNodes = 'uxd-nodes',
+  UXDNodes = 'decisiongraphs',
 }
 
 /** Base interface for Strapi content types */
