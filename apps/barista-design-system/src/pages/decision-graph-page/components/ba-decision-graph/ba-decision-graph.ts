@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
 import { BaPageService } from 'apps/barista-design-system/src/shared/services/page.service';
 
@@ -24,11 +24,12 @@ import { BaPageService } from 'apps/barista-design-system/src/shared/services/pa
   styleUrls: ['./ba-decision-graph.scss'],
 })
 export class BaDecisionGraph implements OnInit {
+  // ToDo: Check why component doesn't get initiatet. (event emitter problem, try observable)
+  @Input('tasknode')
+  tasknode: BaUxdNode | undefined = undefined;
+
   /** Data needed to render the navigation. */
   private _decisionGraphData$ = this._pageService._getPage('uxdg-data');
-
-  /** Amount of start nodes */
-  private _numberOfStartNodes: number;
 
   startOver: any;
 
@@ -58,7 +59,6 @@ export class BaDecisionGraph implements OnInit {
         this.decisionGraphStartNodes.push(dataNode);
       }
     });
-    this._numberOfStartNodes = this.decisionGraphStartNodes.length;
   }
 
   setSelectedStartNode(selectedStartNode: BaUxdNode): void {

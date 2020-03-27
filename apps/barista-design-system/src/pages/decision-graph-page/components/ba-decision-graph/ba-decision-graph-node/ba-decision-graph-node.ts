@@ -28,6 +28,9 @@ export class BaDecisionGraphNode implements OnInit {
   @Input('node')
   node: BaUxdNode | undefined;
 
+  @Output('tasknode')
+  tasknode = new EventEmitter<BaUxdNode>();
+
   @Output('startOver')
   startOver = new EventEmitter<void>();
 
@@ -72,11 +75,14 @@ export class BaDecisionGraphNode implements OnInit {
     const nextNode = this.decisionGraphData.find(node => {
       return node.id === nextNodeId;
     });
-    // TODO: better check and error handling
-    console.log(nextNode!);
-    this.decisionGraphSteps.push(nextNode!);
-    if (!this._started) {
-      this._started = true;
+    if (nextNode!.tasknode) {
+      this.tasknode.emit(nextNode);
+    } else {
+      // TODO: better check and error handling
+      this.decisionGraphSteps.push(nextNode!);
+      if (!this._started) {
+        this._started = true;
+      }
     }
   }
 

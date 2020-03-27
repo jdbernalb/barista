@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'ba-decision-graph-task-node',
@@ -22,5 +24,19 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./ba-decision-graph-task-node.scss'],
 })
 export class BaDecisionGraphTaskNode implements OnInit {
+  @Input('tasknode')
+  taskNode: BaUxdNode;
+
+  constructor(private _sanitizer: DomSanitizer) {}
+
   ngOnInit(): void {}
+
+  // TODO: Error handling when undefined
+  /**
+   * Converts a string to SafeHtml using the DomSanitizer
+   * @param nodeText string to be converted to SafeHtml
+   */
+  getSanitizedNodeText(nodeText: string): SafeHtml | undefined {
+    return this._sanitizer.bypassSecurityTrustHtml(nodeText);
+  }
 }
