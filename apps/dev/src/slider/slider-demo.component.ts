@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'slider-dev-app-demo',
   templateUrl: 'slider-demo.component.html',
   styleUrls: ['slider-demo.component.scss'],
 })
-export class SliderDemo implements OnInit {
-  outerValue = 20;
+export class SliderDemo {
   disabled = false;
-
-  ngOnInit(): void {
-    setInterval(() => {
-      this.disabled = !this.disabled;
-
-      console.log(this.outerValue);
-    }, 5000);
-  }
 }

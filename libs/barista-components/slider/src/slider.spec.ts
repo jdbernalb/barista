@@ -428,11 +428,15 @@ describe('DtSlider', () => {
       dispatchMouseEvent(sliderWrapper, 'mousemove', 51);
       dispatchMouseEvent(sliderWrapper, 'mousedown', 51);
       dispatchKeyboardEvent(sliderWrapper, 'keydown', RIGHT_ARROW);
+      fixture.detectChanges();
       tick(10000);
 
+      expect(sliderWrapper.classList.contains('dt-disabled')).toBe(true);
+      expect(sliderWrapper.getAttribute('aria-disabled')).toBe('true');
       expect(update).not.toHaveBeenCalled();
       expect(testComponent.slider.value).toBe(1);
       expect(inputField.value).toBe('1');
+      expect(inputField.getAttribute('disabled')).not.toBeNull();
       expect(sliderThumb.style.transform).toBe('translateX(-90%)');
       expect(sliderFill.style.transform).toBe('scale3d(0.1, 1, 1)');
       expect(sliderBackground.style.transform).toBe('scale3d(0.9, 1, 1)');
