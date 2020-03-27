@@ -28,6 +28,7 @@ import { Platform } from '@angular/cdk/platform';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Directive,
   ElementRef,
@@ -43,25 +44,25 @@ import {
 import { clamp, isDefined } from '@dynatrace/barista-components/core';
 import { DtInput } from '@dynatrace/barista-components/input';
 import {
+  animationFrameScheduler,
   BehaviorSubject,
   fromEvent,
   merge,
   Observable,
   of,
   Subject,
-  animationFrameScheduler,
 } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
   filter,
   map,
+  observeOn,
   share,
   switchMap,
   takeUntil,
   tap,
   withLatestFrom,
-  observeOn,
 } from 'rxjs/operators';
 import {
   getKeyCodeValue,
@@ -108,7 +109,7 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   _labelUid = `dt-slider-label-${uniqueId++}`;
 
   /** Holds the value of the slider. */
-  private _value$ = new BehaviorSubject<number>(30);
+  private _value$ = new BehaviorSubject<number>(0);
   /** Holds the description of the size of the slider. */
   private _clientRect$: Observable<ClientRect>;
   /** Observer that gets triggered if the slider is resized on the screen. */
@@ -122,13 +123,29 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
    * Binding for the minimum value of the slider.
    * TODO: getter and setter
    */
-  @Input() min: number = 0;
+  @Input()
+  get min(): number {
+    return this._min;
+  }
+  set min(min: number) {
+    this._min = min;
+    this._updateSliderPosition(this._value, this._min, this._max);
+  }
+  private _min: number;
 
   /**
    * Binding for the maximum value of the slider.
    * TODO: getter and setter
    */
-  @Input() max: number = 100;
+  @Input()
+  get max(): number {
+    return this._max;
+  }
+  set max(max: number) {
+    this._max = max;
+    this._updateSliderPosition(this._value, this._min, this._max);
+  }
+  private _max: number;
 
   /**
    * Bindings for the step, if changed, roundShift needs to be recalculated.
@@ -154,8 +171,16 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   /** Holds the value of step internally */
   private _step: number = 5;
 
-  /** TODO: implement the usage of this binding */
-  @Input() disabled: boolean = false;
+  /** Binding for the disabled state. */
+  @Input()
+  get disabled(): boolean {
+    return this._isDisabled;
+  }
+  set disabled(disabled: boolean) {
+    this._isDisabled = disabled;
+    this._changeDetectionRef.markForCheck();
+  }
+  private _isDisabled: boolean = false;
 
   /**
    * The binding for the value of the slider.
@@ -174,7 +199,7 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
     this._value = value;
     // We only need to update if the update is coming from outside the component.
     if (userTriggered) {
-      this._value$.next(roundToSnap(value, this.step, this.min, this.max));
+      this._value$.next(roundToSnap(value, this.step, this._min, this._max));
     }
   }
 
@@ -214,10 +239,14 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
   /** Observer that completes on ngOnDestroy */
   private _destroy$ = new Subject<void>();
 
-  constructor(private _zone: NgZone, private _platform: Platform) {}
+  constructor(
+    private _changeDetectionRef: ChangeDetectorRef,
+    private _zone: NgZone,
+    private _platform: Platform,
+  ) {}
 
   ngOnInit(): void {
-    const initValue = roundToSnap(this.value, this.step, this.min, this.max);
+    const initValue = roundToSnap(this.value, this.step, this._min, this._max);
     if (this._value$.value !== initValue) {
       this._updateValue(initValue);
     }
@@ -253,9 +282,30 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
+  /** @internal Updates The slider based on the new value */
+  private _updateSlider(value: any): void {
+    this._trackWrapper.nativeElement.setAttribute(
+      'aria-valuenow',
+      value.toString(),
+    );
+    this._updateInput(value);
+    this._updateValue(value, false);
+    this._updateSliderPosition(value, this._min, this._max);
+  }
+
   /** Updates the input field with new value. */
   private _updateInput(value: number): void {
     this._sliderInput.value = value.toString();
+  }
+
+  /** Update the slider thumb position based on value, min and max. */
+  private _updateSliderPosition(value: number, min: number, max: number): void {
+    const position: number = getSliderPositionBasedOnValue({ value, min, max });
+    this._thumb.nativeElement.style.transform = `translateX(-${100 -
+      position * 100}%)`;
+    this._sliderFill.nativeElement.style.transform = `scale3d(${position}, 1, 1)`;
+    this._sliderBackground.nativeElement.style.transform = `scale3d(${1 -
+      position}, 1, 1)`;
   }
 
   /**
@@ -308,11 +358,15 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
       map(keyboardEvent => {
         keyboardEvent.stopPropagation(); // global angular keydown would trigger CD.
         const valueAddition = getKeyCodeValue(
-          this.max,
+          this._max,
           this.step,
           keyboardEvent.keyCode,
         );
-        const newValue = clamp(this._value + valueAddition, this.min, this.max);
+        const newValue = clamp(
+          this._value + valueAddition,
+          this._min,
+          this._max,
+        );
         return newValue;
       }),
       distinctUntilChanged(),
@@ -327,8 +381,8 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
           coordinate,
           offset: left,
           width,
-          min: this.min,
-          max: this.max,
+          min: this._min,
+          max: this._max,
           step: this.step,
           roundShift: this._roundShift,
         });
@@ -343,36 +397,17 @@ export class DtSlider implements AfterViewInit, OnDestroy, OnInit {
        * distinctUntilChanged() purposefully left out, to round the value
        * and update the input field with the rounded value
        */
-      map(value => roundToSnap(value, this.step, this.min, this.max)),
+      map(value => roundToSnap(value, this.step, this._min, this._max)),
       takeUntil(this._destroy$),
     );
 
     merge(this._value$, inputValue$, mouse$, keyDown$)
       .pipe(
-        tap(value => {
-          this._trackWrapper.nativeElement.setAttribute(
-            'aria-valuenow',
-            value.toString(),
-          );
-          this._updateInput(value);
-          this._updateValue(value, false);
-        }),
-        map(value =>
-          getSliderPositionBasedOnValue({
-            value,
-            min: this.min,
-            max: this.max,
-          }),
-        ),
+        filter(() => !this._isDisabled),
+        tap(value => this._updateSlider(value)),
         takeUntil(this._destroy$),
       )
-      .subscribe(offsetX => {
-        this._thumb.nativeElement.style.transform = `translateX(-${100 -
-          offsetX * 100}%)`;
-        this._sliderFill.nativeElement.style.transform = `scale3d(${offsetX}, 1, 1)`;
-        this._sliderBackground.nativeElement.style.transform = `scale3d(${1 -
-          offsetX}, 1, 1)`;
-      });
+      .subscribe();
   }
 }
 

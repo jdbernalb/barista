@@ -6,6 +6,7 @@
     #trackWrapper
     tabindex="0"
     class="dt-slider-wrapper"
+    [class.disabled]="disabled"
     [attr.aria-valuenow]="value"
     [attr.aria-valuemin]="min"
     [attr.aria-valuemax]="max"
@@ -27,6 +28,7 @@
     inputmode="numeric"
     dtInput
     pattern="\d+\.?\d*"
+    [disabled]="disabled"
     [attr.aria-labelledby]="_labelUid"
     (change)="inputValueChanged($event)"
   /><ng-content select="dt-slider-unit"></ng-content>

@@ -180,6 +180,41 @@ describe('DtSlider', () => {
       expect(sliderBackground.style.transform).toBe('scale3d(1, 1, 1)');
     });
 
+    it('should update slider position in case the min is changed', () => {
+      testComponent.slider.min = 1;
+      const {
+        inputField,
+        sliderThumb,
+        sliderFill,
+        sliderBackground,
+      } = getElements(fixture);
+
+      expect(testComponent.slider.value).toBe(1);
+      expect(inputField.value).toBe('1');
+      //value is still 1, but slider pos is at the beginning of the slider
+      expect(sliderThumb.style.transform).toBe('translateX(-100%)');
+      expect(sliderFill.style.transform).toBe('scale3d(0, 1, 1)');
+      expect(sliderBackground.style.transform).toBe('scale3d(1, 1, 1)');
+    });
+
+    it('should update slider position in case the min is changed', () => {
+      testComponent.slider.value = 5;
+      testComponent.slider.max = 5;
+      const {
+        inputField,
+        sliderThumb,
+        sliderFill,
+        sliderBackground,
+      } = getElements(fixture);
+
+      expect(testComponent.slider.value).toBe(5);
+      expect(inputField.value).toBe('5');
+      //value is still 5, but slider pos is at the end of the slider
+      expect(sliderThumb.style.transform).toBe('translateX(-0%)');
+      expect(sliderFill.style.transform).toBe('scale3d(1, 1, 1)');
+      expect(sliderBackground.style.transform).toBe('scale3d(0, 1, 1)');
+    });
+
     it('should update the value from input field value change', () => {
       const {
         inputField,
@@ -371,6 +406,36 @@ describe('DtSlider', () => {
       expect(sliderBackground.style.transform).toBe(
         'scale3d(0.19999999999999996, 1, 1)',
       );
+    }));
+
+    it('should NOT call update is slider is disabled', fakeAsync(() => {
+      const {
+        inputField,
+        sliderThumb,
+        sliderFill,
+        sliderBackground,
+        sliderWrapper,
+      } = getElements(fixture);
+      const { slider } = testComponent;
+
+      //<any, any> is needed because _updateSlider is private
+      const update = jest.spyOn<any, any>(slider, '_updateSlider');
+      slider.disabled = true;
+
+      dispatchMouseEvent(sliderWrapper, 'click', 150);
+      dispatchMouseEvent(sliderWrapper, 'click', 50);
+      dispatchMouseEvent(sliderWrapper, 'mousedown', 50);
+      dispatchMouseEvent(sliderWrapper, 'mousemove', 51);
+      dispatchMouseEvent(sliderWrapper, 'mousedown', 51);
+      dispatchKeyboardEvent(sliderWrapper, 'keydown', RIGHT_ARROW);
+      tick(10000);
+
+      expect(update).not.toHaveBeenCalled();
+      expect(testComponent.slider.value).toBe(1);
+      expect(inputField.value).toBe('1');
+      expect(sliderThumb.style.transform).toBe('translateX(-90%)');
+      expect(sliderFill.style.transform).toBe('scale3d(0.1, 1, 1)');
+      expect(sliderBackground.style.transform).toBe('scale3d(0.9, 1, 1)');
     }));
   });
 

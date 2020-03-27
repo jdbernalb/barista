@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { DtSlider } from '@dynatrace/barista-components/slider';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'slider-dev-app-demo',
@@ -24,15 +23,13 @@ import { DtSlider } from '@dynatrace/barista-components/slider';
 })
 export class SliderDemo implements OnInit {
   outerValue = 20;
-
-  @ViewChild(DtSlider, { static: true })
-  private slider: DtSlider;
+  disabled = false;
 
   ngOnInit(): void {
     setInterval(() => {
-      this.outerValue = Math.random() * 12;
-      this.slider.value = this.outerValue;
+      this.disabled = !this.disabled;
+
       console.log(this.outerValue);
-    }, 10000);
+    }, 5000);
   }
 }
