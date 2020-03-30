@@ -28,6 +28,7 @@ import { BaHeadlineLink } from './headline-link/headline-link';
 import { BaColorGrid } from './color-grid/color-grid';
 import { BaLayoutGrid } from './layout-grid/layout-grid';
 import { BaColor } from './color-component/color';
+import { BaDecisionGraphPage } from './decision-graph-page/decision-graph-page';
 import { BaLayoutGridItem } from './layout-grid/layout-grid-item';
 
 /**
@@ -43,6 +44,7 @@ export const BA_CONTENT_COMPONENTS: any[] = [
   BaLayoutGridItem,
   BaLayoutGrid,
   BaColorGrid,
+  BaDecisionGraphPage,
 ];
 
 @NgModule({

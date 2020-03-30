@@ -1,0 +1,12 @@
+@import 'colors';
+
+:host {
+  max-width: 100%;
+  background-color: $purple-600;
+  color: white;
+  border: 2px dotted white;
+}
+
+.dt-uxd-task-node-content {
+  margin: 0 auto;
+}

@@ -15,8 +15,8 @@
  */
 
 import { Component, OnInit, Input } from '@angular/core';
-import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
 import { BaPageService } from 'apps/barista-design-system/src/shared/services/page.service';
+import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
 
 @Component({
   selector: 'ba-decision-graph',

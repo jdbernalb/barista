@@ -48,6 +48,13 @@ export interface BaSinglePageMeta extends BaPageMetaBase {
   sidenav?: BaCategoryNavigation;
 }
 
+export interface BaDecisionGraphPageMeta extends BaPageMetaBase {
+  contributors?: BaContributors;
+  category?: string;
+  tags?: string[];
+  decisionGraph: BaUxdNode[];
+}
+
 export interface BaSinglePageContent extends BaSinglePageMeta {
   content: string;
 }
@@ -68,6 +75,10 @@ export interface BaIconOverviewPageContent extends BaPageMetaBase {
   icons: BaIcon[];
   sidenav?: BaCategoryNavigation;
   category?: string;
+}
+
+export interface BaDecisionGraphPageContent extends BaDecisionGraphPageMeta {
+  content: string;
 }
 
 /** Main navigation */
