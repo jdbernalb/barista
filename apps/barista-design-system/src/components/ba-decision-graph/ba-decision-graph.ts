@@ -24,9 +24,7 @@ import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
   styleUrls: ['./ba-decision-graph.scss'],
 })
 export class BaDecisionGraph implements OnInit {
-  // ToDo: Check why component doesn't get initiatet. (event emitter problem, try observable)
-  @Input('tasknode')
-  tasknode: BaUxdNode | undefined = undefined;
+  // Todo: Scroll to bottom functionality when user starts nodeloop.
 
   /** Data needed to render the navigation. */
   private _decisionGraphData$ = this._pageService._getPage('uxdg-data');
@@ -41,6 +39,9 @@ export class BaDecisionGraph implements OnInit {
 
   /** Contains the start node the user has picked */
   selectedStartNode: BaUxdNode | undefined;
+
+  /** Contains the task node */
+  selectedTaskNode: BaUxdNode | undefined;
 
   //TODO: add correct Type (add to pageservice)
   constructor(private _pageService: BaPageService<any>) {}
@@ -63,6 +64,7 @@ export class BaDecisionGraph implements OnInit {
 
   setSelectedStartNode(selectedStartNode: BaUxdNode): void {
     let id;
+    //skip first edge. Remove 'NOT SO SURE' edges from STRAPI
     selectedStartNode.path.forEach(edge => {
       id = edge.uxd_node;
     });
@@ -71,6 +73,10 @@ export class BaDecisionGraph implements OnInit {
         this.selectedStartNode = data;
       }
     });
+  }
+
+  setSelectedTaskNode(selectedTaskNode: BaUxdNode): void {
+    this.selectedTaskNode = selectedTaskNode;
   }
 
   resetProgress(): void {

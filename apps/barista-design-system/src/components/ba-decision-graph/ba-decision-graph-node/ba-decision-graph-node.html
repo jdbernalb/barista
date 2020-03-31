@@ -4,15 +4,16 @@
       class="dt-uxd-node-content"
       [innerHTML]="getSanitizedNodeText(node.text)"
     ></div>
-    <div class="dt-uxd-edge" *ngIf="node.path.length">
+    <div class="dt-uxd-node-edges" *ngIf="node.path.length">
       <!--Else its last node-->
       <button
         class="dt-uxd-button"
         *ngFor="let edge of node.path"
         [ngClass]="
         {
-          'dt-uxd-yes': edge.text.includes('yes') || edge.selected === true,
-          'dt-uxd-no': edge.text.includes('no') || edge.selected === false
+          'dt-uxd-yes': edge.text.toLowerCase().includes('yes') || edge.selected === true,
+          'dt-uxd-no': edge.text.toLowerCase().includes('no') || edge.selected === false,
+          'dt-uxd-got-it': edge.text.toLowerCase().includes('got')
         }"
         [disabled]="edge.selected !== undefined"
         (click)="setNextNode(edge.uxd_node, edge.text)"

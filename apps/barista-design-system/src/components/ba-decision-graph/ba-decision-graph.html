@@ -6,8 +6,9 @@
   *ngIf="selectedStartNode"
   [node]="selectedStartNode"
   (startOver)="resetProgress()"
-  (tasknode)="tasknode"
+  (tasknode)="setSelectedTaskNode($event)"
 ></ba-decision-graph-node>
 <ba-decision-graph-task-node
-  [tasknode]="tasknode"
+  *ngIf="selectedTaskNode"
+  [tasknode]="selectedTaskNode"
 ></ba-decision-graph-task-node>

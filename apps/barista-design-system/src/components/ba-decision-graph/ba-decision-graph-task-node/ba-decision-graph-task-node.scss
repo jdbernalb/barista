@@ -1,11 +1,10 @@
 @import 'colors';
 // @import 'font-mixin';
 
-:host {
+.dt-uxd-task-node-wrapper {
   max-width: 100%;
-  background-color: $purple-600;
-  color: white;
-  border: 2px dotted white;
+  background-color: #fff;
+  border: 2px double $purple-600;
 }
 
 .dt-uxd-task-node-content {

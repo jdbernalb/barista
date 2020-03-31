@@ -25,11 +25,13 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 })
 export class BaDecisionGraphTaskNode implements OnInit {
   @Input('tasknode')
-  taskNode: BaUxdNode;
+  taskNode: BaUxdNode | undefined;
 
   constructor(private _sanitizer: DomSanitizer) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log(this.taskNode);
+  }
 
   // TODO: Error handling when undefined
   /**

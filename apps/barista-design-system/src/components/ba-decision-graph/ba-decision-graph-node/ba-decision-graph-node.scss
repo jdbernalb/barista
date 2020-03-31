@@ -1,6 +1,6 @@
 @import 'interactive-common';
 @import 'colors';
-// @import 'font-mixins';
+@import 'font-mixins';
 
 :host {
   max-width: 100%;
@@ -8,30 +8,38 @@
 
 ::ng-deep button {
   @include dt-interactive-reset();
-  // @include dt-main-font();
+  @include dt-main-font();
 }
 
 .dt-uxd-node {
-  background-color: #ddd;
-  width: 80%;
+  width: 100%;
   margin: 0 auto;
   text-align: center;
 }
 
 .dt-uxd-node-content {
+  background-color: #bbb;
+  display: inline-block;
+  width: 70%;
   margin: 4px 6px;
 }
 
-.dt-uxd-edge {
-  margin: 0 auto;
+.dt-uxd-node-edges {
+  display: inline-block;
+  width: 20%;
 }
+
+// .dt-uxd-edge {
+//   margin: 0 auto;
+// }
 
 .dt-uxd-button {
   height: 32px;
-  color: white;
-  border-style: solid;
+  min-width: 40px;
+  border: 1px solid black;
   border-radius: 3px;
-  border-width: 1px;
+  margin: 0 4px;
+  color: white;
 
   &:disabled {
     background-color: $gray-300;
@@ -59,6 +67,18 @@
 
   &:active {
     background-color: $red-700;
+  }
+}
+
+.dt-uxd-got-it {
+  background-color: $purple-600;
+
+  &:hover {
+    background-color: $purple-700;
+  }
+
+  &:active {
+    background-color: $purple-800;
   }
 }
 

@@ -54,7 +54,6 @@ export class BaDecisionGraphNode implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.node);
     this._decisionGraphData$.subscribe(data => {
       this.decisionGraphData = data;
     });
