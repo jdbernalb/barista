@@ -62,11 +62,15 @@ export class BaDecisionGraph implements OnInit {
   }
 
   setSelectedStartNode(selectedStartNode: BaUxdNode): void {
-    let index;
+    let id;
     selectedStartNode.path.forEach(edge => {
-      index = edge.uxd_node;
+      id = edge.uxd_node;
     });
-    this.selectedStartNode = this.decisionGraphData[index];
+    this.decisionGraphData.forEach(data => {
+      if (data.id === id) {
+        this.selectedStartNode = data;
+      }
+    });
   }
 
   resetProgress(): void {

@@ -1,6 +1,6 @@
 @import 'interactive-common';
 @import 'colors';
-@import 'font-mixins';
+// @import 'font-mixins';
 
 :host {
   max-width: 100%;
@@ -8,7 +8,7 @@
 
 ::ng-deep button {
   @include dt-interactive-reset();
-  @include dt-main-font();
+  // @include dt-main-font();
 }
 
 .dt-uxd-node {

@@ -25,7 +25,7 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./ba-decision-graph-node.scss'],
 })
 export class BaDecisionGraphNode implements OnInit {
-  @Input('node')
+  @Input()
   node: BaUxdNode | undefined;
 
   @Output('tasknode')
@@ -54,6 +54,7 @@ export class BaDecisionGraphNode implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.node);
     this._decisionGraphData$.subscribe(data => {
       this.decisionGraphData = data;
     });

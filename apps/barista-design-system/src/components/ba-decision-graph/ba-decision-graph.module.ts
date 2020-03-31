@@ -15,35 +15,26 @@
  */
 
 import { CommonModule } from '@angular/common';
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { Route, RouterModule } from '@angular/router';
-import { BaPageGuard } from '../../shared/services/page-guard';
-import { BaRecentlyOrderedService } from '../../shared/services/recently-ordered.service';
-import { BaDecisionGraphPage } from './decision-graph-page';
-import {
-  BaDecisionGraph,
-  BaDecisionGraphStartNode,
-  BaDecisionGraphNode,
-  BaDecisionGraphTaskNode,
-} from './components/ba-decision-graph';
-import {} from './components/ba-decision-graph/ba-decision-graph';
-
-export const routes: Route[] = [
-  {
-    path: '',
-    component: BaDecisionGraphPage,
-    canActivate: [BaPageGuard],
-  },
-];
+import { BaDecisionGraphNode } from './ba-decision-graph-node/ba-decision-graph-node';
+import { BaDecisionGraphStartNode } from './ba-decision-graph-start-node/ba-decision-graph-start-node';
+import { BaDecisionGraphTaskNode } from './ba-decision-graph-task-node/ba-decision-graph-task-node';
+import { BaDecisionGraph } from './ba-decision-graph';
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild(routes), BaDecisionGraph],
+  imports: [CommonModule, BrowserModule],
   declarations: [
     BaDecisionGraph,
     BaDecisionGraphNode,
     BaDecisionGraphStartNode,
     BaDecisionGraphTaskNode,
   ],
-  providers: [BaRecentlyOrderedService],
+  exports: [
+    BaDecisionGraph,
+    BaDecisionGraphNode,
+    BaDecisionGraphStartNode,
+    BaDecisionGraphTaskNode,
+  ],
 })
-export class BaDecisionGraphPageModule {}
+export class BaDecisionGraphModule {}
