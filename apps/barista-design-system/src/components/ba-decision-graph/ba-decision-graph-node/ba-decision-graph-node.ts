@@ -28,9 +28,6 @@ export class BaDecisionGraphNode implements OnInit {
   @Input()
   node: BaUxdNode | undefined;
 
-  @Output('tasknode')
-  tasknode = new EventEmitter<BaUxdNode>();
-
   @Output('startOver')
   startOver = new EventEmitter<void>();
 
@@ -42,6 +39,9 @@ export class BaDecisionGraphNode implements OnInit {
 
   /** Array of all nodes and edges which should be displayed */
   decisionGraphSteps: BaUxdNode[] = [];
+
+  /** Contains the task node */
+  selectedTaskNode: BaUxdNode | undefined;
 
   /** @internal Whether the Undo button in template is displayed */
   _started: boolean = false;
@@ -75,15 +75,16 @@ export class BaDecisionGraphNode implements OnInit {
     const nextNode = this.decisionGraphData.find(node => {
       return node.id === nextNodeId;
     });
-    if (nextNode!.tasknode) {
-      this.tasknode.emit(nextNode);
-    } else {
-      // TODO: better check and error handling
-      this.decisionGraphSteps.push(nextNode!);
-      if (!this._started) {
-        this._started = true;
-      }
+
+    // TODO: better check and error handling
+    this.decisionGraphSteps.push(nextNode!);
+    if (!this._started) {
+      this._started = true;
     }
+  }
+
+  setSelectedTaskNode(selectedTaskNode: BaUxdNode): void {
+    this.selectedTaskNode = selectedTaskNode;
   }
 
   /** Resets the decisionGraphSteps array to only contain startNodes */

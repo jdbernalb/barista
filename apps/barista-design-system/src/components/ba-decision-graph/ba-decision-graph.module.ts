@@ -19,7 +19,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BaDecisionGraphNode } from './ba-decision-graph-node/ba-decision-graph-node';
 import { BaDecisionGraphStartNode } from './ba-decision-graph-start-node/ba-decision-graph-start-node';
-import { BaDecisionGraphTaskNode } from './ba-decision-graph-task-node/ba-decision-graph-task-node';
 import { BaDecisionGraph } from './ba-decision-graph';
 
 @NgModule({
@@ -28,13 +27,7 @@ import { BaDecisionGraph } from './ba-decision-graph';
     BaDecisionGraph,
     BaDecisionGraphNode,
     BaDecisionGraphStartNode,
-    BaDecisionGraphTaskNode,
   ],
-  exports: [
-    BaDecisionGraph,
-    BaDecisionGraphNode,
-    BaDecisionGraphStartNode,
-    BaDecisionGraphTaskNode,
-  ],
+  exports: [BaDecisionGraph, BaDecisionGraphNode, BaDecisionGraphStartNode],
 })
 export class BaDecisionGraphModule {}

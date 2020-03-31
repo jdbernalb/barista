@@ -40,9 +40,6 @@ export class BaDecisionGraph implements OnInit {
   /** Contains the start node the user has picked */
   selectedStartNode: BaUxdNode | undefined;
 
-  /** Contains the task node */
-  selectedTaskNode: BaUxdNode | undefined;
-
   //TODO: add correct Type (add to pageservice)
   constructor(private _pageService: BaPageService<any>) {}
 
@@ -73,10 +70,6 @@ export class BaDecisionGraph implements OnInit {
         this.selectedStartNode = data;
       }
     });
-  }
-
-  setSelectedTaskNode(selectedTaskNode: BaUxdNode): void {
-    this.selectedTaskNode = selectedTaskNode;
   }
 
   resetProgress(): void {

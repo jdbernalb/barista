@@ -31,10 +31,7 @@ import { BaColor } from './color-component/color';
 import { BaLayoutGridItem } from './layout-grid/layout-grid-item';
 import { BaDecisionGraph } from './ba-decision-graph/ba-decision-graph';
 import { BaDecisionGraphStartNode } from './ba-decision-graph/ba-decision-graph-start-node/ba-decision-graph-start-node';
-import { BaDecisionGraphTaskNode } from './ba-decision-graph/ba-decision-graph-task-node/ba-decision-graph-task-node';
 import { BaDecisionGraphNode } from './ba-decision-graph/ba-decision-graph-node/ba-decision-graph-node';
-// import { BaDecisionGraphModule } from './ba-decision-graph/ba-decision-graph.module';
-// import { BaDecisionGraphModule } from './ba-decision-graph/ba-decision-graph.module';
 
 /**
  * The order of the following components is relevant in case they are nested.
@@ -50,7 +47,6 @@ export const BA_CONTENT_COMPONENTS: any[] = [
   BaLayoutGrid,
   BaColorGrid,
   BaDecisionGraphStartNode,
-  BaDecisionGraphTaskNode,
   BaDecisionGraphNode,
   BaDecisionGraph,
 ];
