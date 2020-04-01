@@ -11,38 +11,51 @@
   @include dt-main-font();
 }
 
+::ng-deep .dt-uxd-node-content p {
+  margin-bottom: 0;
+}
+
 .dt-uxd-node {
+  height: auto;
   width: 100%;
-  margin: 0 0 0 auto;
+  border-top: 2px solid #00a1b2;
+  border-bottom: 2px solid #00a1b2;
+}
+
+.dt-uxd-flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 .dt-uxd-node-content {
-  background-color: #bbb;
-  display: inline-block;
-  width: 70%;
-  margin: 4px 6px;
+  width: fit-content;
+  margin: 4px auto;
+  padding: 4px;
+  border-radius: 2px;
 }
 
 .dt-uxd-node-edges {
-  display: inline-block;
-  width: 20%;
-  margin: 4px 6px;
+  max-height: 36px;
+  width: fit-content;
+  margin: 4px auto;
 }
-
-// .dt-uxd-edge {
-//   margin: 0 auto;
-// }
 
 .dt-uxd-button {
   height: 32px;
   min-width: 40px;
-  border: 1px solid black;
   border-radius: 3px;
   margin: 0 4px;
   color: white;
 
   &:disabled {
     background-color: $gray-300;
+
+    &:hover {
+      background-color: $gray-300;
+    }
   }
 }
 
@@ -108,10 +121,17 @@
 
 .dt-uxd-task-node-content {
   margin: 0 auto;
+  padding: 4px;
 }
 
 .dt-uxd-task-node-wrapper {
   max-width: 100%;
   background-color: #fff;
   border: 2px double $purple-600;
+  margin: 4px;
+}
+
+.dt-uxd-navigation {
+  width: fit-content;
+  margin: 4px auto;
 }

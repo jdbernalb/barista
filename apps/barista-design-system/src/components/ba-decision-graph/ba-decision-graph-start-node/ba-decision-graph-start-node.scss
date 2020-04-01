@@ -1,5 +1,10 @@
 :host {
   display: flex;
+  margin-bottom: 20px;
+}
+
+::ng-deep .dt-uxd-startnode p {
+  margin-bottom: 20px;
 }
 
 .dt-uxd-startnode-grid {

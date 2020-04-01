@@ -15,7 +15,7 @@
  */
 
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { BaUxdNode } from '@dynatrace/shared/barista-definitions';
+import { BaUxdNode, BaUxdEdge } from '@dynatrace/shared/barista-definitions';
 import { BaPageService } from 'apps/barista-design-system/src/shared/services/page.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 
@@ -65,15 +65,19 @@ export class BaDecisionGraphNode implements OnInit {
   /**
    * Pushes the next node into the decisionGraphSteps array
    * @param nextNodeId Next node id to be displayed
-   * @param _edgeText Buttontext to to be displayed
    */
-  setNextNode(nextNodeId: number, _edgeText: string): void {
-    this.setSelectedStateOfEdge(
-      this.decisionGraphSteps[this.decisionGraphSteps.length - 1],
-      true,
+  setNextNode(selectedEdge: BaUxdEdge): void {
+    this.decisionGraphSteps[this.decisionGraphSteps.length - 1].path.map(
+      edge => {
+        if (edge.text === selectedEdge.text) {
+          edge.selected = true;
+        } else {
+          edge.selected = false;
+        }
+      },
     );
     const nextNode = this.decisionGraphData.find(node => {
-      return node.id === nextNodeId;
+      return node.id === selectedEdge.uxd_node;
     });
 
     // TODO: better check and error handling
@@ -100,16 +104,19 @@ export class BaDecisionGraphNode implements OnInit {
 
   /** Removes the last step in the decisionGraphSteps array */
   undoLastStep(): void {
-    this.decisionGraphSteps.splice(this.decisionGraphSteps.length - 1, 1);
-    this.setSelectedStateOfEdge(
-      this.decisionGraphSteps[this.decisionGraphSteps.length - 1],
+    this.decisionGraphSteps[
+      this.decisionGraphSteps.length - 2
+    ] = this.setSelectedStateOfEdge(
+      this.decisionGraphSteps[this.decisionGraphSteps.length - 2],
       undefined,
     );
+    this.decisionGraphSteps.splice(this.decisionGraphSteps.length - 1, 1);
+    if (this.decisionGraphSteps.length === 0) this.startOver.emit();
   }
 
   /** Sets a nodes path.selected state */
   setSelectedStateOfEdge(node: BaUxdNode, state?: boolean): BaUxdNode {
-    node.path.forEach(edge => {
+    node.path.map(edge => {
       switch (state) {
         case true:
           edge.selected = true;

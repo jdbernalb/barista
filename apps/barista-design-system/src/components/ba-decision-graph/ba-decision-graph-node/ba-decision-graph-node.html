@@ -1,6 +1,7 @@
 <div class="dt-uxd-node" *ngIf="node">
   <div *ngFor="let node of decisionGraphSteps">
     <ng-container *ngIf="!node.tasknode">
+      <!-- <div class="dt-uxd-flex"> -->
       <div
         class="dt-uxd-node-content"
         [innerHTML]="getSanitizedNodeText(node.text)"
@@ -12,16 +13,17 @@
           *ngFor="let edge of node.path"
           [ngClass]="
           {
-            'dt-uxd-yes': edge.text.toLowerCase().includes('yes') || edge.selected === true,
-            'dt-uxd-no': edge.text.toLowerCase().includes('no') || edge.selected === false,
+            'dt-uxd-yes': edge.text.toLowerCase().includes('yes'),
+            'dt-uxd-no': edge.text.toLowerCase().includes('no'),
             'dt-uxd-got-it': edge.text.toLowerCase().includes('got')
           }"
-          [disabled]="edge.selected !== undefined"
-          (click)="setNextNode(edge.uxd_node, edge.text)"
+          [disabled]="edge.selected === false"
+          (click)="setNextNode(edge)"
         >
           {{edge.text}}
         </button>
       </div>
+      <!-- </div> -->
     </ng-container>
     <div *ngIf="node.tasknode" class="dt-uxd-task-node-wrapper">
       <div
@@ -32,7 +34,7 @@
   </div>
 </div>
 <!-- Navigation functionality -->
-<div *ngIf="decisionGraphSteps.length > 0">
+<div class="dt-uxd-navigation" *ngIf="decisionGraphSteps.length > 0">
   <button class="dt-uxd-button dt-uxd-back-button" (click)="undoLastStep()">
     Back
   </button>
