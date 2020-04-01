@@ -398,6 +398,19 @@
       "projectType": "application",
       "architect": {
         "build": {
+          "builder": "@dynatrace/workspace:build-barista",
+          "options": {
+            "devServerTarget": "barista-design-system:serve-ssr",
+            "outputPath": "dist/apps/barista-design-system/browser",
+            "routesFile": "dist/barista-data/routes.txt"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "barista-design-system:serve-ssr:production"
+            }
+          }
+        },
+        "build-frontend": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/apps/barista-design-system/browser",
@@ -510,7 +523,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "barista-design-system:build"
+            "browserTarget": "barista-design-system:build-frontend"
           },
           "configurations": {
             "production": {
@@ -521,7 +534,7 @@
         "serve-ssr": {
           "builder": "@nguniversal/builders:ssr-dev-server",
           "options": {
-            "browserTarget": "barista-design-system:build",
+            "browserTarget": "barista-design-system:build-frontend",
             "serverTarget": "barista-design-system:build-server"
           },
           "configurations": {
@@ -557,19 +570,6 @@
             "tsConfig": "apps/barista-design-system/tsconfig.spec.json",
             "setupFile": "apps/barista-design-system/src/test-setup.ts",
             "passWithNoTests": true
-          }
-        },
-        "render": {
-          "builder": "@dynatrace/workspace:build-barista",
-          "options": {
-            "devServerTarget": "barista-design-system:serve-ssr",
-            "outputPath": "dist/apps/barista-design-system/browser",
-            "routesFile": "dist/barista-data/routes.txt"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "barista-design-system:serve-ssr:production"
-            }
           }
         }
       }

@@ -34,7 +34,7 @@ jobs:
           npm run examples-tools
           npm run barista-tools
           npm run ng build workspace
-          npm run ng run barista-design-system:render:production
+          npm run ng run barista-design-system:build:production
 
       - name: ZEIT Now Deployment
         id: now-deployment
